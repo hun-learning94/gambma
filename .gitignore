@@ -6,3 +6,4 @@ results_past/
 *.Rproj
 *.o
 *.Rproj.user
+.Rproj.user
