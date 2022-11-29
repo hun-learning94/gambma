@@ -1,7 +1,3 @@
-*.pdf
-legacy_codes/
-results/
-results_past/
 *.Rhistory
 *.Rproj
 *.o
