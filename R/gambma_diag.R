@@ -360,7 +360,7 @@ gambma = function(fm, dat,
       out$acceptProb = res$AcceptProp
     }
   } else if (knotConfig == "VS"){
-    getIdx = (vsCtrl$burnIn+1):vsCtrl$mcmcIter
+    getIdx = vsCtrl$burnIn + 1:vsCtrl$mcmcIter
     out$mcmcIter = vsCtrl$mcmcIter
     out$knots = res$KNOTS[getIdx,]
     tmp = list()
@@ -372,7 +372,7 @@ gambma = function(fm, dat,
     }
     out$numknots = sapply(tmp, function(x) rowSums(x))
   } else if (knotConfig == "FREE"){
-    getIdx = (freeCtrl$burnIn+1):(freeCtrl$mcmcIter+freeCtrl$burnIn)
+    getIdx = freeCtrl$burnIn + 1:freeCtrl$mcmcIter
     out$mcmcIter = freeCtrl$mcmcIter
     out$knotLocs = res$KNOTS[getIdx]
     out$knotLocsIdx = res$KNOTSIDX[getIdx]
@@ -596,7 +596,8 @@ plot.gambma = function(x, alpha = 0.025, flist = NULL, elapsed = NULL, show_plot
       } else {
         tmpylim = range(c(Fits_mean, Fits_ub, Fits_lb))
         tmpylim[1] = tmpylim[1] - 0.2; tmpylim[2] = tmpylim[2] + 0.2;
-        graphics::plot(xgrid, Fits_mean, type="n", xlab = xnames[j], ylab = paste0("f(",xnames[j], ")"), ylim = tmpylim)
+        graphics::plot(xgrid, Fits_mean, type="n", xlab = xnames[j], 
+                       ylab = bquote(paste('f'[.(j)]*'('*.(xnames[j])*')')), ylim = tmpylim)
       }
       graphics::polygon(x = c(xgrid, rev(xgrid)), y = c(Fits_lb, rev(Fits_ub)), col = "grey", border = NA)
       graphics::lines(xgrid, Fits_mean, col = "blue", lty=2)
