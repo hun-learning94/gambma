@@ -16,6 +16,8 @@ void BtrBpr_update(const int &BDRL,
                    const double &newknot,
                    const unsigned &oldknotidx){
   if((BDRL != 0) && (BDRL != 1) && (BDRL != 2)) Rcpp::stop("Invalied BDRL");
+  
+  
   double bdknot_l = .0;
   double bdknot_r = 1.0;
   // B.each_col() = (-arma::pow(arma::abs(x - augknot(nk-1)), 3) + arma::pow(arma::abs(x - augknot(0)), 3)) / 
@@ -118,57 +120,79 @@ void RJMCMC(double &PtoC,
   unsigned idx{0}, oldknotidx{0};
   double dice, idx_knot, new_knot, sum_bir;
   arma::uvec subknotsidx = arma::find((knotsidxP == p+1) && (knotsP > 0));
-  arma::vec subknots = knotsP(subknotsidx);
-  arma::vec subknotsP;
+  arma::vec subknotsP, subknots;
+  if(subknotsidx.is_empty()){
+    subknots.empty();
+  } else {
+    subknots = knotsP(subknotsidx);
+  }
   int timer{0};
   unsigned BDRL{0};
   
+  // Rcpp::Rcout << "p " << p << "\n";
+  // Rcpp::Rcout << "knotsP \n";
+  // Rcpp::Rcout << knotsP.t()<< "\n";
+  // Rcpp::Rcout << "subknotsidx \n";
+  // Rcpp::Rcout << subknotsidx.t() << "\n";
+  // Rcpp::Rcout << "subknots \n";
+  // Rcpp::Rcout << subknots.t() << "\n";
+  
   // throw dice
+  // birth: BDRL = 0, death: BDRL = 1; relocate: BDRL = 2;
+  // note that subknots always include 0 meaning linear basis term
   dice = arma::randu<double>();
-  // if(subknots.n_elem == 1 && (1.0-dice) < dea_p){ // k = 0 is not allowed
-  //   while((1.0-dice) < dea_p) dice = arma::randu<double>();
-  // }
-  // if(subknots.n_elem >= maxk){ // birth not allowed
-  //   while(dice < bir_p) dice = arma::randu<double>();
-  // }
-  // Rcpp::Rcout << dice << "\n";
-  // Rcpp::Rcout << bir_p << "\n";
-  if(dice < bir_p){
+  if(dice < bir_p){ BDRL = 0;
+  } else if((1.0 - dice) < dea_p){ BDRL = 1;
+  } else { BDRL = 2; }
+  
+  int fuck{0};
+  
+  if(BDRL == 0){
     // birth step ///////////////////////////////////////////////////////////////////////////////////////
-    BDRL = 0; 
-    // Rcpp::Rcout << "birth chosen \n";
-    // 1) choose one knot and sample new knot (sample idx in 0, 1, ..., knots.n_elem - 1)
-    try{idx = arma::randi<unsigned>(arma::distr_param(0, subknots.n_elem - 1));}
-    catch(...){
-      Rcpp::Rcout<< "birth subknots " << subknots.t()<<"\n" ;
-      Rcpp::stop("rand i error");
+    if(subknots.n_elem > 0){
+      try{idx = arma::randi<unsigned>(arma::distr_param(0, subknots.n_elem - 1));}
+      catch(...){
+        Rcpp::Rcout<< "birth subknots " << subknots.t()<<"\n" ;
+        Rcpp::stop("rand i error");
+      }
+      idx_knot = subknots(idx);
+      new_knot = R::rbeta(nu * idx_knot, nu * (1.0 - idx_knot));
+      new_knot = std::round(new_knot * 50) / 50;
+      while(std::abs(new_knot - 1.0)<0.001 || std::abs(new_knot - 0.0)<0.001){
+        new_knot = R::rbeta(nu * idx_knot, nu * (1.0 - idx_knot));
+        new_knot = std::round(new_knot * 50) / 50;
+        fuck++;
+        if(fuck > 20) Rcpp::stop("propose failed");
+      }
+      subknotsP = arma::vec(subknots.n_elem + 1, arma::fill::zeros);
+      subknotsP.subvec(0, subknots.n_elem - 1) = subknots;
+      subknotsP(subknots.n_elem) = new_knot;
+      subknotsP = arma::sort(subknotsP);
+      
+      sum_bir = 0.0;
+      for(unsigned i{0}; i<subknots.n_elem; i++){
+        sum_bir += R::dbeta(new_knot, idx_knot*nu, (1.0 - idx_knot)*nu, false);
+      }
+      sum_bir = std::min(1.0, sum_bir);
+      CtoP = bir_p * sum_bir / (double) subknots.n_elem;
+      PtoC = dea_p / (double) (1 + subknots.n_elem);  
+      
+    } else {
+      // numknot 0 -> 1
+      new_knot = 0.001 + arma::randu<double>() * (0.999-0.001);
+      new_knot = std::round(new_knot * 50) / 50;
+      while(std::abs(new_knot - 1.0)<0.001 || std::abs(new_knot - 0.0)<0.001){
+        new_knot = 0.001 + arma::randu<double>() * (0.999-0.001);
+        new_knot = std::round(new_knot * 50) / 50;
+        fuck++;
+        if(fuck > 20) Rcpp::stop("propose failed");
+      }
+      subknotsP.set_size(1);
+      subknotsP(0) = new_knot;
+      
+      CtoP = bir_p;
+      PtoC = dea_p;
     }
-    idx_knot = subknots(idx);
-    new_knot = R::rbeta(nu * idx_knot, nu * (1.0 - idx_knot));
-    new_knot = std::round(new_knot * 50) / 50;
-    if(std::abs(new_knot - 1.0)<0.001) Rcpp::stop("\n");
-    if(std::abs(new_knot - 0.0)<0.001) Rcpp::stop("\n");
-    
-    // 2) get knotsP
-    subknotsP = arma::vec(subknots.n_elem + 1, arma::fill::zeros);
-    subknotsP.subvec(0, subknots.n_elem - 1) = subknots;
-    subknotsP(subknots.n_elem) = new_knot;
-    subknotsP = arma::sort(subknotsP);
-    
-    // Rcpp::Rcout << subknotsP.n_elem << "\n";
-    // Rcpp::Rcout << maxk << "\n";
-    
-    if(subknotsP.n_elem > maxk) Rcpp::stop("\n");
-    
-    // 3) calculate CtoP, PtoC
-    sum_bir = 0.0;
-    for(unsigned i{0}; i<subknots.n_elem; i++){
-      sum_bir += R::dbeta(new_knot, idx_knot*nu, (1.0 - idx_knot)*nu, false);
-    }
-    sum_bir = std::min(1.0, sum_bir);
-    CtoP = bir_p * sum_bir / (double) subknots.n_elem;
-    PtoC = dea_p / (double) (1 + subknots.n_elem);
-    // Rcout << "sub done3 \n";
     
     if(std::isnan(CtoP) != 0 || std::isnan(PtoC) != 0 ||
        std::isfinite(log(CtoP)) != 1 || std::isfinite(log(PtoC)) != 1 ){
@@ -179,11 +203,10 @@ void RJMCMC(double &PtoC,
       // Rcpp::Rcout << "PtoC " << R::dbeta(idx_knot, new_knot*nu, (1.0 - new_knot)*nu, false) << "\n";
       Rcpp::stop("\n");
     }
-  } else if ((1.0 - dice) < dea_p){
+  } else if (BDRL == 1){
     // death step ///////////////////////////////////////////////////////////////////////////////////////
-    BDRL = 1; 
     // Rcpp::Rcout << "death chosen \n";
-    if(subknots.n_elem == 1) Rcpp::stop("");
+    if(subknots.n_elem == 0) Rcpp::stop("");
     // 1) choose one knot and kill
     try{
       idx = arma::randi<unsigned>(arma::distr_param(0, subknots.n_elem - 1));
@@ -193,22 +216,23 @@ void RJMCMC(double &PtoC,
       Rcpp::stop("rand i error");
     }
     new_knot = subknots(idx);
-    // Rcout << "sub done1 \n";
-    
-    // 2) get knotsP, knotsidxP
     subknotsP = subknots;
     subknotsP.shed_row(idx);
-    // Rcout << "sub done2 \n";
     
-    // 3) calculate CtoP, PtoC
-    sum_bir = 0.0;
-    for(unsigned i{0}; i<subknotsP.n_elem; i++){
-      sum_bir += R::dbeta(new_knot, subknotsP(i)*nu, (1.0 - subknotsP(i))*nu, false);
+    if(subknots.n_elem > 1){
+      sum_bir = 0.0;
+      for(unsigned i{0}; i<subknotsP.n_elem; i++){
+        sum_bir += R::dbeta(new_knot, subknotsP(i)*nu, (1.0 - subknotsP(i))*nu, false);
+      }
+      sum_bir = std::min(1.0, sum_bir);
+      CtoP = dea_p / (double) subknots.n_elem;
+      PtoC = bir_p * sum_bir / (double) (subknots.n_elem - 1);
+      
+    } else { // numknot 1 -> 0
+      // Rcpp::Rcout << "propose killing the last knot \n";
+      CtoP = dea_p;
+      PtoC = bir_p;
     }
-    sum_bir = std::min(1.0, sum_bir);
-    CtoP = dea_p / (double) subknots.n_elem;
-    PtoC = bir_p * sum_bir / (double) (subknots.n_elem - 1);
-    // Rcout << "sub done3 \n";
     
     if(std::isnan(CtoP) != 0 || std::isnan(PtoC) != 0 ||
        std::isfinite(log(CtoP)) != 1 || std::isfinite(log(PtoC)) != 1 ){
@@ -219,13 +243,14 @@ void RJMCMC(double &PtoC,
     }
   } else {
     // relocate step /////////////////////////////////////////////////////////////////////////////////////
-    BDRL = 2; // Rcpp::Rcout << "relocation chosen \n";
+    // BDRL = 2; // Rcpp::Rcout << "relocation chosen \n";
     // 1) choose one knot and relocate
+    // if(subknots.n_elem == 0) Rcpp::stop("");
     try{
       idx = arma::randi<unsigned>(arma::distr_param(0, subknots.n_elem - 1));
       oldknotidx = subknotsidx(idx);
     } catch(...) {
-      Rcpp::Rcout<< "relocation subknots " << subknots.t()<<"\n" ;
+      // Rcpp::Rcout<< "relocation subknots " << subknots.t()<<"\n" ;
       Rcpp::stop("rand i error");
     }
     idx_knot = subknots(idx);

@@ -200,8 +200,23 @@ Rcpp::List gambmaFREE(const arma::vec &y,
           // num_failed++;
           continue;
         }
+        
+        // if(knotsProp.n_elem < knotsCurr.n_elem){
+        //   Rcpp::Rcout << "death proposed \n";
+        //   Rcpp::Rcout << "knotsProp.n_elem " << knotsProp.n_elem-1 << "\n";
+        //   Rcpp::Rcout << "knotsCurr.n_elem " << knotsCurr.n_elem-1 << "\n";
+        //   Rcpp::Rcout << "lpyProp " << lpyProp <<
+        //     " std::log(PtoC) " << std::log(PtoC) << "\n";
+        //   Rcpp::Rcout << "lpyCurr " << lpyCurr <<
+        //     " std::log(CtoP) " << std::log(CtoP) << "\n";
+        // }
+        
         // Rcpp::Rcout << "o calculated \n";
         if(arma::randu<double>() < std::exp(o)){ // if accepted
+          // if(knotsProp.n_elem == 0){
+          //   Rcpp::Rcout << "no knot selected \n";
+          //   Rcpp::Rcout << knotsCurr.n_elem << " " << knotsProp.n_elem << "\n";
+          // }
           BtrCurr = BtrProp; BprCurr = BprProp; 
           knotsCurr = knotsProp; knotsIdxCurr = knotsIdxProp; betaIdxCurr = betaIdxProp;
           lpyCurr = lpyProp;
