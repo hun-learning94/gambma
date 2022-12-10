@@ -149,6 +149,7 @@ void RJMCMC(double &PtoC,
   
   if(BDRL == 0){
     // birth step ///////////////////////////////////////////////////////////////////////////////////////
+    if(subknots.n_elem >= (maxk+1)) Rcpp::stop("");
     if(subknots.n_elem > 0){
       try{idx = arma::randi<unsigned>(arma::distr_param(0, subknots.n_elem - 1));}
       catch(...){
