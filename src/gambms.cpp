@@ -3,9 +3,9 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
-#include "gambmaFREE.h"
-#include "gambmaVS.h"
-#include "gambmaEVEN.h"
+#include "gambmsFREE.h"
+#include "gambmsVS.h"
+#include "gambmsEVEN.h"
 
 ////////////////////////////////////////////////////////////////////////////////////
 // EVEN OUTPUT /////////////////////////////////////////////////////////////////////

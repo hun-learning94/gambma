@@ -1,8 +1,8 @@
-#ifndef __gambmaEVEN__
-#define __gambmaEVEN__
+#ifndef __gambmsEVEN__
+#define __gambmsEVEN__
 #include <RcppArmadillo.h>
 
-Rcpp::List gambmaEVEN(const arma::vec &y,
+Rcpp::List gambmsEVEN(const arma::vec &y,
                       const double &glmWeight,
                       const arma::mat &X,
                       const arma::mat &X_pr,
@@ -25,7 +25,7 @@ Rcpp::List gambmaEVEN(const arma::vec &y,
                       const bool& storeFit,
                       unsigned printiter);
 
-#endif // __gambmaEVEN__
+#endif // __gambmsEVEN__
 
 
 

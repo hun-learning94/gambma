@@ -1,6 +1,5 @@
-## Constructor for a class "gambvs"
-## i.e. a model fit function for gambvs
-source("R/scale01.R")
+## Constructor for a class "gambms"
+## i.e. a model fit function for gambms
 sm = function(x) x
 ncs = function(x, nk = 10, lambda = 0){
   term = as.character(substitute(x))
@@ -10,7 +9,24 @@ ncs = function(x, nk = 10, lambda = 0){
   ret
 }
 
-gambma = function(fm, dat, 
+scaleto01 = function(X, mins=NULL, maxs=NULL){
+  if(is.null(mins)) stop("need mins")
+  if(is.null(maxs)) stop("need maxs")
+  X = sweep(X, 2, mins, "-")
+  X = sweep(X, 2, maxs-mins, "/")
+  return(X)
+}
+
+scalefrom01 = function(X, mins=NULL, maxs = NULL){
+  if(is.null(mins)) stop("need mins")
+  if(is.null(maxs)) stop("need maxs")
+  X = sweep(X, 2, maxs-mins, "*")
+  X = sweep(X, 2, mins, "+")
+  return(X)
+}
+
+
+gambms = function(fm, dat, 
                   knotConfig = c("EVEN", "VS", "FREE"),
                   prior = c("Unit", "Hyper-g", "Uniform", "Hyper-g/n", "Beta-prime", "ZS-adapted",
                             "Robust", "Intrinsic", "constant", "CH"),
@@ -252,7 +268,7 @@ gambma = function(fm, dat,
     if(is.null(evenCtrl$burnIn)) evenCtrl$burnIn = 500L
     if(is.null(evenCtrl$mcIter)) evenCtrl$mcIter = 2000L
     if(is.null(evenCtrl$mcmcIter)) evenCtrl$mcmcIter = 2000L
-    res = gambmaEVEN(y, 
+    res = gambmsEVEN(y, 
                      glmWeight, 
                      X_01, 
                      Xgrid_01,
@@ -281,7 +297,7 @@ gambma = function(fm, dat,
     if(is.null(freeCtrl$burnIn)) freeCtrl$burnIn = 500L
     if(is.null(freeCtrl$mcmcIter)) freeCtrl$mcmcIter = 2000L
     if(is.null(freeCtrl$thin)) freeCtrl$thin = maxk
-    res = gambmaFREE(y, 
+    res = gambmsFREE(y, 
                      glmWeight, 
                      X_01, 
                      Xgrid_01,
@@ -304,7 +320,7 @@ gambma = function(fm, dat,
     vsCtrl = Ctrl
     if(is.null(vsCtrl$burnIn)) vsCtrl$burnIn = 500L
     if(is.null(vsCtrl$mcmcIter)) vsCtrl$mcmcIter = 2000L
-    res = gambmaVS(y, 
+    res = gambmsVS(y, 
                    glmWeight, 
                    X_01, 
                    Xgrid_01,
@@ -410,12 +426,12 @@ gambma = function(fm, dat,
     out$linears[,-1] = sweep(out$linears[,-1, drop=F], 2, XLinSubSd, FUN="/")
   }
   
-  attr(out, "class") = "gambma" # S3 object
+  attr(out, "class") = "gambms" # S3 object
   return(out)
 }
 
 ###### print method ######
-print.gambma = function(x){
+print.gambms = function(x){
   cat("fm: \n")
   print(x$fm)
   cat("\n")
@@ -434,8 +450,9 @@ print.gambma = function(x){
   # } 
   cat("------------------------------------------------------------ \n")
 }
+print.gambma = print.gambms
 
-summary.gambma = function(x){
+summary.gambms = function(x){
   if(is.null(dim(x$X))) x$X = matrix(x$X, ncol = 1)
   if(is.null(dim(x$linears))) x$linears = matrix(x$linears, ncol = 1)
   mean_post = colMeans(x$linears)
@@ -455,16 +472,16 @@ summary.gambma = function(x){
   rownames(linear_coeff) = colnames(x$XLinOrg)
   
   g_samp = data.frame(
-    mean = mean(fit$g_sampled),
-    median = median(fit$g_sampled),
-    sd = sd(fit$g_sampled),
-    lower95 = quantile(fit$g_sampled, 0.025),
-    upper95 = quantile(fit$g_sampled, 1-0.025)
+    mean = mean(x$g_sampled),
+    median = median(x$g_sampled),
+    sd = sd(x$g_sampled),
+    lower95 = quantile(x$g_sampled, 0.025),
+    upper95 = quantile(x$g_sampled, 1-0.025)
   )
   rownames(g_samp) = "g"
   
   if(x$family == "gaussian"){
-    sigsamp = sqrt(fit$sigma2)
+    sigsamp = sqrt(x$sigma2)
     sig_samp = data.frame(
       mean = mean(sigsamp),
       median = median(sigsamp),
@@ -511,9 +528,10 @@ summary.gambma = function(x){
     cat("------------------------------------------------------------- \n")
   }
 }
+summary.gambma = summary.gambms
 
 ###### plot method ######
-plot.gambma = function(x, alpha = 0.025, flist = NULL, elapsed = NULL, show_plot = T, ylim= NULL, 
+plot.gambms = function(x, alpha = 0.025, flist = NULL, elapsed = NULL, show_plot = T, ylim= NULL, 
                        show_title = T, Linadj = NULL, n_row = NULL)
 {
   old_pars <- par(no.readonly = TRUE)
@@ -626,154 +644,8 @@ plot.gambma = function(x, alpha = 0.025, flist = NULL, elapsed = NULL, show_plot
   }
   return(invisible(PREDtable))
 }
+plot.gambma = plot.gambms
 
-# plothighs = function(x, ...) UseMethod("plothighs")
-# plothighs.gambvs = function(x, xp, xrange = c(0, 1), smoo_index = 1, cred_int = 0.95, 
-#                             np = 100, fit_col = "blue", shade_col = "gray75", fits_col = "gray75",
-#                             highs_n = 1000, plot_highs_n = 100, adj.intercept = F, ...)
-
-
-# plotknot = function(x){
-#   par(mar=c(2.5, 3, 2, 1), mgp=c(1.5,0.5,0), oma = c(0,0,2,0))
-#   ##############################################################################
-#   if(x$knotConfig == "VS"){
-#     if(is.null(dim(x$knots))) x$knots = matrix(x$knots, ncol=1)
-#     zmat = t(apply(x$knots, 1, function(y) idx_to_z(y, x$maxk, x$p)))
-#     incprob = colMeans(zmat)
-#     start = end = 1
-#     if(x$p < 4){plotarray = c(1, p)} else {plotarray = c(2, ceiling(p/2))}
-#     par(mfrow=plotarray)
-#     for(pp in 1:x$p){
-#       xgrid = seq(range(x$Xgrid[,pp])[1], range(x$Xgrid[,pp])[2], length = x$maxk + 2)
-#       xgrid = xgrid[-c(1, length(xgrid))]
-#       end = start + x$maxk - 1
-#       plot(xgrid, incprob[start:end], type="h", ylim = c(0, 1), lwd=3, col = "steelblue",
-#            main = paste0("Marginal knot inc. prob., f", pp),
-#            xlab = paste0("x", pp), ylab = "")
-#       start = end + 1
-#     }
-#     return(invisible(0))
-#   }
-#   ##############################################################################
-#   if(x$knotConfig == "FREE"){
-#     knots = unlist(x$knotLocs)
-#     knots_idx = unlist(x$knotLocsIdx)
-# 
-#     if(x$p < 4){plotarray = c(1, p)} else {plotarray = c(2, ceiling(p/2))}
-#     par(mfrow=plotarray)
-#     for(pp in 1:x$p){
-#       tmphist = hist(knots[knots_idx == pp], breaks = 20, plot=F)
-#       counts = tmphist$counts / length(x$knotLocs)
-#       plot(tmphist$breaks[-1], counts, type="h", ylim = c(0, 1), lwd=3, col = "steelblue",
-#            main = paste0("Marginal (discretized) knot inc. prob., f", pp),
-#            xlab = paste0("x", pp), ylab = "")
-#     }
-#     return(invisible(0))
-#   }
-#   ##############################################################################
-#   if(x$knotConfig == "series"){
-#     ############################################################################
-#     if(x$whichmethod == "Enumerate"){
-#       prob = exp(x$lpydiagnosis$lpy - max(x$lpydiagnosis$lpy))
-#       prob = prob/sum(prob)
-#       plot(prob)
-# 
-#       if(x$p < 4){plotarray = c(1, p)} else {plotarray = c(2, ceiling(p/2))}
-#       par(mfrow=plotarray)
-#       for(pp in 1:x$p){
-#         tmpdf = data.frame(
-#           knotnums = x$knotnumsAll[, pp],
-#           prob = prob
-#         )
-#         plot(aggregate(prob ~ knotnums, data = tmpdf, sum), type="b",
-#              ylim=c(0,1), lwd = 2, cex = 1.5,
-#              col = "steelblue",
-#              main = paste0("Marginal prob. of num. of knots, f", pp),
-#              xlab = paste0("Num. of knots, f", pp),
-#              ylab = "")
-#       }
-#       return(invisible(0))
-#     }
-#     ############################################################################
-#     if(x$whichmethod == "MH"){
-#       knotmat = matrix(0, nrow= length(x$knots), ncol = x$p)
-#       for(i in 1:length(x$knots)){
-#         knotmat[i,] = idx_to_knotnums(x$knots[i], x$p, x$maxk)
-#       }
-#       if(x$p < 4){plotarray = c(1, p)} else {plotarray = c(2, ceiling(p/2))}
-#       par(mfrow=plotarray)
-#       for(pp in 1:x$p){
-#         tmpvec = rep(0,x$maxk+1)
-#         names(tmpvec) = 0:x$maxk
-#         tmpknot = table(knotmat[,pp])
-#         tmpvec[names(tmpvec) %in% names(tmpknot)] = tmpknot
-#         tmpvec = tmpvec / sum(tmpvec)
-#         plot(tmpvec, type="b",
-#              ylim=c(0,1), lwd = 2, cex = 1.5,
-#              col = "steelblue",
-#              main = paste0("Marginal prob. of num. of knots, f", pp),
-#              xlab = paste0("Num. of knots, f", pp),
-#              ylab = "")
-#       }
-#       return(invisible(0))
-#     }
-#   }
-# }
-
-# diagnosis = function(x){
-#   par(mar=c(2.5, 3, 2, 1), mgp=c(1.5,0.5,0), oma = c(0,0,2,0))
-#   if(x$p > 1) stop("diagnosis only for p = 1")
-#   type = "p"
-#   if(x$knotConfig == "EVEN"){
-#     if(x$enumerate){
-#       numknot = c(x$knotnumsAll)
-#       type = "b"
-#     }
-#   }
-# 
-#   if(x$knotConfig == "VS"){
-#     # if(is.null(dim(x$knots))) x$knots = matrix(x$knots, ncol=1)
-#     # zmat = t(apply(x$knots, 1, function(y) idx_to_z(y, x$maxk, x$p)))
-#     # numknot = c(rowSums(zmat))
-#     numknot= x$numknots
-#   }
-# 
-#   loglik = x$lpydiagnosis$comp1
-#   if(x$family == "gaussian") loglik = x$lpydiagnosis$r2Qm
-#   pen2 = x$lpydiagnosis$comp2 
-#   pen3 = x$lpydiagnosis$comp3
-#   lpy = x$lpydiagnosis$lpy
-# 
-#   center = function(x) x - mean(x)
-#   par(mfrow=c(1,4))
-#   ylim = range(c(center(loglik),center(pen2), center(pen3), center(lpy)))
-#   plot(numknot, center(loglik), ylim = ylim,
-#        type=type, lwd = 2, cex = 1.5,
-#        col = "steelblue",
-#        main = "Max loglikelihood",
-#        xlab = "Num. of knots",
-#        ylab = "")
-#   plot(numknot, center(pen2), ylim = ylim,
-#        type=type, lwd = 2, cex = 1.5,
-#        col = "steelblue",
-#        main = "Penalty",
-#        xlab = "Num. of knots",
-#        ylab = "")
-#   plot(numknot, center(pen3), ylim = ylim,
-#        type=type, lwd = 2, cex = 1.5,
-#        col = "steelblue",
-#        main = "Model prior",
-#        xlab = "Num. of knots",
-#        ylab = "")
-#   plot(numknot, center(lpy), ylim = ylim,
-#        type=type, lwd = 2, cex = 1.5,
-#        col = "steelblue",
-#        main = "Model evidence",
-#        xlab = "Num. of knots",
-#        ylab = "")
-#   mtext(x$prior, outer = T, font =2)
-#   return(invisible(0))
-# }
 
 
 plotnumknot = function(x, n_row = NULL){

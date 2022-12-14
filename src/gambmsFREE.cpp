@@ -4,12 +4,12 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
 #include "CRAD.h"
-#include "gambmaSupportFunctions.h"
-#include "gambmaVS.h"
+#include "gambmsSupportFunctions.h"
+#include "gambmsVS.h"
 #include "RJMCMC.h"
 
 //[[Rcpp::export]]
-Rcpp::List gambmaFREE(const arma::vec &y,
+Rcpp::List gambmsFREE(const arma::vec &y,
                       const double &glmWeight,
                       const arma::mat &X,
                       const arma::mat &X_pr,
@@ -58,7 +58,7 @@ Rcpp::List gambmaFREE(const arma::vec &y,
   arma::mat BtrCurr, BprCurr, BtrProp, BprProp;
   arma::mat rootJBetaHatCurr, rootJBetaHatProp;
   
-  Rcpp::List the_initial_knot = gambmaVS(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda,
+  Rcpp::List the_initial_knot = gambmsVS(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda,
                                          familyLink, gprior, aa, bb, ss, gg,
                                          initS, Rglm, nearPDres, true, false, initS+100);
   

@@ -1,5 +1,5 @@
-#ifndef __gambmaSupportFunctions__
-#define __gambmaSupportFunctions__
+#ifndef __gambmsSupportFunctions__
+#define __gambmsSupportFunctions__
 #include <RcppArmadillo.h>
 #include "bayesFactors.h"
 
@@ -236,4 +236,4 @@ void zToKnots(arma::vec &knotsZ,
               const arma::vec &knots,
               const arma::uvec &knotsidx);
 
-#endif // __gambmaSupportFunctions__
+#endif // __gambmsSupportFunctions__

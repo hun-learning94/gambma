@@ -2,10 +2,10 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
-#include "gambmaSupportFunctions.h"
+#include "gambmsSupportFunctions.h"
 
 //[[Rcpp::export]]
-Rcpp::List gambmaEVEN(const arma::vec &y,
+Rcpp::List gambmsEVEN(const arma::vec &y,
                       const double &glmWeight,
                       const arma::mat &X,
                       const arma::mat &X_pr,

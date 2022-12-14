@@ -4,10 +4,10 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
 #include "CRAD.h"
-#include "gambmaSupportFunctions.h"
+#include "gambmsSupportFunctions.h"
 
 //[[Rcpp::export]]
-Rcpp::List gambmaVS(const arma::vec &y,
+Rcpp::List gambmsVS(const arma::vec &y,
                     const double &glmWeight,
                     const arma::mat &X,
                     const arma::mat &X_pr,

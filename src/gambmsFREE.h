@@ -1,8 +1,8 @@
-#ifndef __gambmaFREE__
-#define __gambmaFREE__
+#ifndef __gambmsFREE__
+#define __gambmsFREE__
 #include <RcppArmadillo.h>
 
-Rcpp::List gambmaFREE(const arma::vec &y,
+Rcpp::List gambmsFREE(const arma::vec &y,
                       const double &glmWeight,
                       const arma::mat &X,
                       const arma::mat &X_pr,
@@ -25,4 +25,4 @@ Rcpp::List gambmaFREE(const arma::vec &y,
                       const bool& storeFit,
                       unsigned printiter);
 
-#endif // __gambmaFREE__
+#endif // __gambmsFREE__
