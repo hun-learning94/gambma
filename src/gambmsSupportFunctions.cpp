@@ -10,10 +10,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // repPermu_arma (EVENKNOT)
 // a recursion formula to list out all the possible knot combinations
-void repPermu_void(const unsigned &maxk, 
-                   const unsigned &P, 
-                   arma::umat &OUT, 
-                   unsigned depth, 
+void repPermu_void(const unsigned &maxk,
+                   const unsigned &P,
+                   arma::umat &OUT,
+                   unsigned depth,
                    unsigned &rowidx){
   if(depth == P){
     rowidx +=1;
@@ -26,14 +26,14 @@ void repPermu_void(const unsigned &maxk,
   }
 }
 
-arma::umat repPermu_arma(const arma::uvec &maxk, 
+arma::umat repPermu_arma(const arma::uvec &maxk,
                          const unsigned &P){
-  
+
   unsigned msdim = std::pow(arma::max(maxk)+1, P);
   arma::umat OUT(msdim, P, arma::fill::ones);
   unsigned depth{0}, rowidx{0};
   repPermu_void(arma::max(maxk), P, OUT, depth, rowidx);
-  
+
   // applying component-wise maxk restriction
   arma::uvec idx(msdim, arma::fill::ones);
   for(unsigned i{0}; i<msdim; i++){
@@ -46,7 +46,7 @@ arma::umat repPermu_arma(const arma::uvec &maxk,
 ////////////////////////////////////////////////////////////////////////////////
 // knotnums_to_idx (EVENKNOT)
 // (3, 4, 1, 2) -> number in base maxk
-int64_t knotnums_to_idx(const arma::ivec &knotnums, 
+int64_t knotnums_to_idx(const arma::ivec &knotnums,
                         const unsigned &maxk){
   int64_t idx{0};
   for(unsigned j{0}; j < knotnums.n_elem; j++){
@@ -58,8 +58,8 @@ int64_t knotnums_to_idx(const arma::ivec &knotnums,
 ////////////////////////////////////////////////////////////////////////////////
 // idx_to_knotnums (EVENKNOT)
 // inverse of knotnums_to_idx
-arma::ivec idx_to_knotnums(int64_t idx, 
-                           const unsigned &knotnums_nelem, 
+arma::ivec idx_to_knotnums(int64_t idx,
+                           const unsigned &knotnums_nelem,
                            const unsigned &maxk)
 {
   arma::ivec knotnums(knotnums_nelem, arma::fill::zeros);
@@ -84,7 +84,7 @@ arma::ivec idx_to_knotnums(int64_t idx,
 //   // Rcpp::Rcout<< "longidx " << longidx << "\n";
 //   return longidx;
 // }
-// 
+//
 // arma::ivec longidx_to_z(int64_t longidx,
 //                         const unsigned &z_nelem){
 //   arma::ivec z(z_nelem, arma::fill::zeros);
@@ -105,13 +105,13 @@ void knotsandidx(arma::vec &knots,
                  const arma::uvec &knotnums,
                  const arma::mat &X){
   // Rcpp::Rcout << "knotnums " << knotnums.t() << "\n";
-  
+
   knots.set_size(arma::accu(knotnums));
   knots.zeros();
   knotsidx.set_size(arma::accu(knotnums));
   knotsidx.zeros();
   double bdmargin{.0};
-  
+
   arma::vec qts;
   unsigned knotnum;
   unsigned start{0}, end{0};
@@ -132,14 +132,14 @@ void knotsandidx(arma::vec &knots,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// knotprior 
+// knotprior
 // componentwise independent Poisson prior for the number of knots
 void knotPrior(double &comp3,
                const arma::uvec &betaidx,
                const arma::uvec &maxk,
                const arma::vec &Lambda,
                const bool& isgrid){
-  comp3 = 0.0; 
+  comp3 = 0.0;
   double knotnums{.0};
   bool LambdaPos = (arma::accu(Lambda) > 0);
   for(unsigned i{0}; i<Lambda.n_elem; i++){
@@ -153,8 +153,8 @@ void knotPrior(double &comp3,
 
 ////////////////////////////////////////////////////////////////////////////////
 // MATX_TO_LPY
-// from B_tr the design matrix, yield model evidence, mle and rootJBetaHat 
-// input: y, B_tr, offset, glmWeight, 
+// from B_tr the design matrix, yield model evidence, mle and rootJBetaHat
+// input: y, B_tr, offset, glmWeight,
 //        knotnums,
 //        Rglm(y, B_tr, offset, glmWeight, EtaHat)
 //        Lambda, familyLink, gprior, aa, bb, ss, gg
@@ -178,14 +178,14 @@ void MATX_TO_LPY(double &lpy,
                  const arma::vec &Lambda,
                  const unsigned& familyLink,
                  const unsigned& gprior,
-                 const double &aa, 
-                 const double &bb, 
-                 const double &ss, 
+                 const double &aa,
+                 const double &bb,
+                 const double &ss,
                  const double &gg,
                  const Rcpp::Function &Rglm,
                  const bool& isgrid,
                  const arma::uvec &maxk){
-  
+
   // arma::vec knots;
   // arma::uvec knotsidx;
   // knotsandidx(knots, knotsidx, knotnums, X);
@@ -206,17 +206,17 @@ void MATX_TO_LPY(double &lpy,
     // Rcpp::stop("");
   }
 
-  
+
   double AlphaHat = mle(0);
   EtaHat = AlphaHat + B_tr.cols(1, B_tr.n_cols-1) * mle.subvec(1, mle.n_elem-1) + offset;
   arma::vec JEtaHat = JEta(glmWeight, y, EtaHat, familyLink);
   double JAlphaHat = JAlpha(JEtaHat);
   rootJBetaHat = rootJBeta(mle.subvec(1, mle.n_elem-1), B_tr, JEtaHat, familyLink);
-  
+
   // Rcpp::Rcout << "trying r2Qm \n";
   r2Qm = getR2QM(familyLink, y, offset, AlphaHat,EtaHat, JEtaHat);
   // Rcpp::Rcout << "trying Lpy \n";
-  Lpy(lpy, comp1, comp2, glmWeight, 
+  Lpy(lpy, comp1, comp2, glmWeight,
       y, B_tr.cols(1, B_tr.n_cols-1), offset, EtaHat, JAlphaHat, r2Qm,
       familyLink, gprior, aa, bb, ss, gg);
   // Rcpp::Rcout << "trying knotPrior \n";
@@ -244,26 +244,26 @@ void KNOT_TO_LPY(const arma::uvec &knotnums,
                  const arma::vec &Lambda,
                  const unsigned& familyLink,
                  const unsigned& gprior,
-                 const double &aa, 
-                 const double &bb, 
-                 const double &ss, 
+                 const double &aa,
+                 const double &bb,
+                 const double &ss,
                  const double &gg,
                  const Rcpp::Function &Rglm,
                  const bool& isgrid,
                  const arma::uvec &maxk){
-  
+
   bool NS{true};
   knotsandidx(knots, knotsidx, knotnums, X);
   Rcpp::List CRAD_tr = CRAD_cpp(X, XLin, knots, knotsidx, NS, 0.0);
   arma::mat B_tr = Rcpp::as<arma::mat>(CRAD_tr["X"]); // expanded for train, intercept term included
   arma::uvec betaidx = Rcpp::as<arma::uvec>(CRAD_tr["betaidx"]);
   // betaidx.shed_row(0);
-  
+
   // Rcpp::Rcout << knots.t() << "\n";
   // Rcpp::Rcout << B_tr << "\n";
   // Rcpp::Rcout << "KNOT_TO_LPY basis expansion done \n";
   MATX_TO_LPY(lpy, comp1, comp2, comp3, r2Qm, mle, EtaHat, rootJBetaHat,
-              y, glmWeight, B_tr, betaidx, offset, Lambda, 
+              y, glmWeight, B_tr, betaidx, offset, Lambda,
               familyLink, gprior, aa, bb, ss, gg,
               Rglm, isgrid, maxk);
 }
@@ -271,8 +271,8 @@ void KNOT_TO_LPY(const arma::uvec &knotnums,
 ////////////////////////////////////////////////////////////////////////////////
 // MATX_to_SAMPLE
 // from (mle, EtaHat, rootJBetaHat, r2Qm), produce new posterior sample
-// input: y, glmWeight, mle, EtaHat, rootJBetaHat, r2Qm, 
-//        B_tr, B_pr, betaidx, 
+// input: y, glmWeight, mle, EtaHat, rootJBetaHat, r2Qm,
+//        B_tr, B_pr, betaidx,
 //        familyLink, gprior, aa, bb, ss, gg
 // output: PredSmooths, PredLinears, phi, g
 // we do reuse stored mle rootJBetaHat but recreate CRAD basis as
@@ -300,43 +300,43 @@ void MATX_TO_SAMPLE(arma::vec &FittedSmooths,
                     const double &PLin,
                     const unsigned& familyLink,
                     const unsigned& gprior,
-                    const double &aa, 
-                    const double &bb, 
-                    const double &ss, 
+                    const double &aa,
+                    const double &bb,
+                    const double &ss,
                     const double &gg,
                     const Rcpp::Function &nearPDres,
                     const Rcpp::Function &crossproduct,
                     const Rcpp::Function &Rbasechol,
                     const bool &storeFit){
-  
+
   unsigned N{B_tr.n_rows};
   unsigned np{B_pr.n_rows};
-  
+
   // PredSmooths.set_size(P*np);
   FittedSmooths.zeros(); PredSmooths.zeros();
   // PredLinears.set_size(PLin);
   PredLinears.zeros();
-  
+
   // arma::vec knots;
   // arma::uvec knotsidx;
   // knotsandidx(knots, knotsidx, knotnums, X);
   // Rcpp::List CRAD_tr = CRAD_cpp(X, XLin, knots, knotsidx, true, 0.0);
   // arma::mat B_tr = Rcpp::as<arma::mat>(CRAD_tr["X"]); // expanded for train, intercept term included
   // arma::mat B_pr = CRAD_test_cpp(X_pr, XLin, CRAD_tr);
-  
+
   // arma::vec EtaHat = mle(0) + B_tr.cols(1, B_tr.n_cols-1) * mle.subvec(1, mle.n_elem-1) + offset;
   arma::vec JEtaHat = JEta(glmWeight, y, EtaHat, familyLink);
   double JAlphaHat = JAlpha(JEtaHat);
-  
+
   // 1. g posterior
   gPosteriors(g_, v_, t_, q_, l_, m_,
-              static_cast<double>(N), static_cast<double>(P), 
-              r2Qm, familyLink, gprior, 
+              static_cast<double>(N), static_cast<double>(P),
+              r2Qm, familyLink, gprior,
               aa, bb, ss, gg);
-  
+
   // 2. phi, alpha, beta posteriors
   if(familyLink == 11){
-    phi = R::rgamma(static_cast<double>(N) / 2.0, 
+    phi = R::rgamma(static_cast<double>(N) / 2.0,
                     2.0 / (std::pow(arma::norm(y-arma::as_scalar(arma::mean(y)),2),2.0) * (1.0-r2Qm+r2Qm/(g_+1.0))));
   } else {phi = 1.0;}
   double alpha = AlphaPost(mle(0), JAlphaHat, phi);
@@ -359,8 +359,8 @@ void MATX_TO_SAMPLE(arma::vec &FittedSmooths,
   for(unsigned i{0}; i < P; i++){
     // Rcpp::Rcout << "i " << i << "\n";
     beta_sub = beta;
-    beta_sub.elem(arma::find(betaidx.subvec(1, betaidx.n_elem - 1) != (i+1))).zeros(); 
-    
+    beta_sub.elem(arma::find(betaidx.subvec(1, betaidx.n_elem - 1) != (i+1))).zeros();
+
     end_fit = start_fit + N - 1; end_prd = start_prd + np - 1;
     if(storeFit) FittedSmooths(arma::span(start_fit, end_fit)) = (B_tr.cols(1, B_tr.n_cols - 1) * beta_sub);
     PredSmooths(arma::span(start_prd, end_prd)) = (B_pr.cols(1, B_pr.n_cols - 1) * beta_sub);
@@ -393,31 +393,31 @@ void KNOT_TO_SAMPLE(const arma::uvec &knotnums,
                     const double &r2Qm,
                     const unsigned& familyLink,
                     const unsigned& gprior,
-                    const double &aa, 
-                    const double &bb, 
-                    const double &ss, 
+                    const double &aa,
+                    const double &bb,
+                    const double &ss,
                     const double &gg,
                     const Rcpp::Function &nearPDres,
                     const Rcpp::Function &crossproduct,
                     const Rcpp::Function &Rbasechol,
                     const bool& storeFit){
-  
-  
+
+
   knotsandidx(knots, knotsidx, knotnums, X);
   // Rcpp::Rcout << "knotsandidx done\n";
   Rcpp::List CRAD_tr = CRAD_cpp(X, XLin, knots, knotsidx, true, 0.0);
   // Rcpp::Rcout << "CRAD_tr done\n";
   arma::uvec betaidx = Rcpp::as<arma::uvec>(CRAD_tr["betaidx"]);
-  arma::mat B_tr = Rcpp::as<arma::mat>(CRAD_tr["X"]); 
+  arma::mat B_tr = Rcpp::as<arma::mat>(CRAD_tr["X"]);
   arma::mat B_pr = CRAD_test_cpp(X_pr, XLin, CRAD_tr);
   // Rcpp::Rcout << "B_pr done\n";
-  
+
   // Rcpp::Rcout << "getting into MATX_TO_SAMPLE \n";
   MATX_TO_SAMPLE(FittedSmooths, PredSmooths, PredLinears,
                  phi, g_, v_, t_, q_, l_, m_,
                  y, glmWeight, mle, EtaHat, rootJBetaHat, r2Qm,
                  B_tr, B_pr, betaidx, X.n_cols, XLin.n_cols,
-                 familyLink, gprior, 
+                 familyLink, gprior,
                  aa, bb, ss, gg,
                  nearPDres, crossproduct, Rbasechol, storeFit);
 }
@@ -425,9 +425,9 @@ void KNOT_TO_SAMPLE(const arma::uvec &knotnums,
 
 ////////////////////////////////////////////////////////////////////////////////
 // MC_POSTERIOR (EVENKNOT)
-// from list of (knotnums, mle, EtaHat, rootJBetaHat, r2Qm) and WEIGHT, produce MCiter posterior samples 
+// from list of (knotnums, mle, EtaHat, rootJBetaHat, r2Qm) and WEIGHT, produce MCiter posterior samples
 // input: y, glmWeight, WEIGHT,
-//        list of (knotnums, mle, EtaHat, rootJBetaHat, r2Qm), 
+//        list of (knotnums, mle, EtaHat, rootJBetaHat, r2Qm),
 //        familyLink, gprior, aa, bb, ss, gg
 // output: list of (PredSmooths, PredLinears, phi, g), KNOTLOCS, KNOTLOCSIDX
 // we do reuse stored mle rootJBetaHat but recreate CRAD basis as
@@ -455,20 +455,20 @@ void MC_POSTERIOR(arma::mat &FITTEDSMOOTHS,
                   const arma::vec &R2QM,
                   const unsigned& familyLink,
                   const unsigned& gprior,
-                  const double &aa, 
-                  const double &bb, 
-                  const double &ss, 
+                  const double &aa,
+                  const double &bb,
+                  const double &ss,
                   const double &gg,
                   const Rcpp::Function &nearPDres,
                   const Rcpp::Function &crossproduct,
                   const Rcpp::Function &Rbasechol,
                   const bool& storeFit){
-  
+
   unsigned P{X.n_cols}; // num of predictors
   unsigned N{X.n_rows};
   unsigned PLin{XLin.n_cols};
   unsigned np{X_pr.n_rows};
-  
+
   arma::vec knots;
   arma::uvec knotsidx, knotnums, betaidx;
   Rcpp::List CRAD_tr;
@@ -476,55 +476,55 @@ void MC_POSTERIOR(arma::mat &FITTEDSMOOTHS,
   arma::vec mle, EtaHat;
   arma::mat rootJBetaHat;
   // double r2Qm;
-  
+
   double phi{1.0}, g_{static_cast<double>(N)};
   double v_{0.1}, t_{0.1}, q_{0.1}, l_{0.1}, m_{0.1};
   arma::vec FittedSmooths, PredSmooths, PredLinears;
   PredSmooths.set_size(P*np); PredLinears.set_size(PLin);FittedSmooths.set_size(P*N);
-  
+
   arma::uvec orders = Rcpp::RcppArmadillo::sample(
-    arma::regspace<arma::uvec>(0, numMCcandidate - 1), 
+    arma::regspace<arma::uvec>(0, numMCcandidate - 1),
     MCiter, true, WEIGHT);
   unsigned idx;
-  
+
   // Rcpp::Rcout << "got orders \n";
   for(unsigned s{0}; s<MCiter; s++){
     idx = orders(s);
-    
+
     // knotnums = KNOTNUMS_MCcandidate.row(idx).t();
     // knotsandidx(knots, knotsidx, knotnums, X);
     // CRAD_tr = CRAD_cpp(X, XLin, knots, knotsidx, true, 0.0);
     // betaidx = Rcpp::as<arma::uvec>(CRAD_tr["betaidx"]);
-    // B_tr = Rcpp::as<arma::mat>(CRAD_tr["X"]); 
+    // B_tr = Rcpp::as<arma::mat>(CRAD_tr["X"]);
     // B_pr = CRAD_test_cpp(X_pr, XLin, CRAD_tr);
     // mle = Rcpp::as<arma::vec>(MLE(idx));
     // EtaHat = ETAHAT.col(idx);
     // rootJBetahat = Rcpp::as<arma::mat>(ROOTJBETAHAT(idx));
     // r2Qm = R2QM(idx);
-    
+
     // MATX_TO_SAMPLE(PredSmooths, PredLinears,
     //                phi, g_, v_, t_, q_, l_, m_,
     //                y, glmWeight, mle, EtaHat, rootJBetaHat, r2Qm,
     //                B_tr, B_pr, betaidx, X.n_cols, XLin.n_cols,
-    //                familyLink, gprior, 
+    //                familyLink, gprior,
     //                aa, bb, ss, gg,
     //                nearPDres, crossproduct, Rbasechol);
-    
+
     // Rcpp::Rcout << "getting into KNOT_TO_SAMPLE \n";
     // Rcpp::Rcout << KNOTNUMS_MCcandidate.col(idx) << "\n";
-    KNOT_TO_SAMPLE(KNOTNUMS_MCcandidate.col(idx), 
+    KNOT_TO_SAMPLE(KNOTNUMS_MCcandidate.col(idx),
                    knots, knotsidx,
                    FittedSmooths, PredSmooths, PredLinears,
-                   phi, g_, v_, t_, q_, l_, m_, 
-                   y, glmWeight, X, X_pr, XLin, 
-                   Rcpp::as<arma::vec>(MLE(idx)), 
+                   phi, g_, v_, t_, q_, l_, m_,
+                   y, glmWeight, X, X_pr, XLin,
+                   Rcpp::as<arma::vec>(MLE(idx)),
                    ETAHAT.col(idx),
                    Rcpp::as<arma::mat>(ROOTJBETAHAT(idx)),
                    R2QM(idx),
                    familyLink, gprior, aa, bb, ss, gg,
                    nearPDres, crossproduct, Rbasechol,
                    storeFit);
-    
+
     FITTEDSMOOTHS.row(s) = FittedSmooths.t();
     PREDSMOOTHS.row(s) = PredSmooths.t();
     PREDLINEARS.row(s) = PredLinears.t();
@@ -536,7 +536,7 @@ void MC_POSTERIOR(arma::mat &FITTEDSMOOTHS,
 
 ////////////////////////////////////////////////////////////////////////////////
 // mark non-knot basis terms (linear etc) (VSKNOT)
-arma::ivec markIsKont(const arma::uvec &betaidx, 
+arma::ivec markIsKont(const arma::uvec &betaidx,
                       const unsigned &howmanybasisterms){
   arma::ivec isknot = arma::ivec(betaidx.n_elem, arma::fill::ones);
   isknot.elem(arma::find(betaidx < 1)) -= 1;
@@ -544,7 +544,7 @@ arma::ivec markIsKont(const arma::uvec &betaidx,
     if(betaidx(i) > 0){
       if((betaidx(i) - betaidx(i-1)) > 0){
         for(unsigned j{0}; j<howmanybasisterms; j++) isknot(i+j) = 0;
-      } 
+      }
     }
   }
   return isknot;
@@ -552,7 +552,7 @@ arma::ivec markIsKont(const arma::uvec &betaidx,
 
 ////////////////////////////////////////////////////////////////////////////////
 // z to knots (VSKNOT, FREEKNOT)
-void zToKnots(arma::vec &knotsZ, 
+void zToKnots(arma::vec &knotsZ,
               arma::uvec &knotsidxZ,
               arma::uvec &betaidxZ,
               arma::mat &B_trZ,
@@ -564,7 +564,7 @@ void zToKnots(arma::vec &knotsZ,
               const arma::ivec &isknot,
               const arma::vec &knots,
               const arma::uvec &knotsidx){
-  
+
   knotsZ.set_size(isknot.n_elem);
   knotsZ.zeros();
   knotsidxZ.set_size(isknot.n_elem);
@@ -573,54 +573,11 @@ void zToKnots(arma::vec &knotsZ,
   knotsZ = knotsZ.elem(arma::find(z > 0));
   knotsidxZ.elem(arma::find(isknot > 0)) = knotsidx;
   knotsidxZ = knotsidxZ.elem(arma::find(z > 0));
-  
+
   betaidxZ = betaidx.elem(arma::find(z > 0));
   B_trZ = B_tr.cols(arma::find(z > 0));
   B_prZ = B_pr.cols(arma::find(z > 0));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

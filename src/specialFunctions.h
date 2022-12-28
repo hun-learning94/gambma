@@ -5,11 +5,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 double log1F1_cpp(const double &aa, const double &rr, const double &xx);
-  
 double log2F1_cpp(const double &bb, const double &aa, const double &rr, const double &xx);
-
 double logPhi1_cpp(const double &aa, const double &bb, const double &rr, const double &xx, const double &yy);
-
 double logF1_cpp(const double &aa, const double &bb, const double &bbp, const double &rr, const double &xx, const double &yy);
 
 #endif // __specialFunctions__

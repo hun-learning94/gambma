@@ -1,71 +1,63 @@
-## Constructor for a class "gambms"
-## i.e. a model fit function for gambms
-sm = function(x) x
-ncs = function(x, nk = 10, lambda = 0){
-  term = as.character(substitute(x))
-  label = paste0("ncs(", term, ")")
-  ret = list(term = term, label = label, nk = nk, lambdaVec = lambda)
-  class(ret) = "ncsSmoothSpec"
-  ret
-}
-
-scaleto01 = function(X, mins=NULL, maxs=NULL){
-  if(is.null(mins)) stop("need mins")
-  if(is.null(maxs)) stop("need maxs")
-  X = sweep(X, 2, mins, "-")
-  X = sweep(X, 2, maxs-mins, "/")
-  return(X)
-}
-
-scalefrom01 = function(X, mins=NULL, maxs = NULL){
-  if(is.null(mins)) stop("need mins")
-  if(is.null(maxs)) stop("need maxs")
-  X = sweep(X, 2, maxs-mins, "*")
-  X = sweep(X, 2, mins, "+")
-  return(X)
-}
-
-
-gambms = function(fm, dat, 
+#' Title
+#'
+#' @param fm
+#' @param dat
+#' @param knotConfig
+#' @param prior
+#' @param family
+#' @param link
+#' @param g_manual
+#' @param a_manual
+#' @param b_manual
+#' @param s_manual
+#' @param evenCtrl
+#' @param vsCtrl
+#' @param freeCtrl
+#' @param printIter
+#' @param np
+#' @param storeFitted
+#'
+#' @return
+#' @export
+#'
+#' @examples
+gambms = function(fm, dat,
                   knotConfig = c("EVEN", "VS", "FREE"),
-                  prior = c("Unit", "Hyper-g", "Uniform", "Hyper-g/n", "Beta-prime", "ZS-adapted",
-                            "Robust", "Intrinsic", "constant", "CH"),
+                  prior = c("Beta-prime", "ZS-adapted", "Robust", "Intrinsic","constant", "Hyper-g", "Uniform", "Hyper-g/n"),
                   family = c("poisson", "gaussian", "bernoulli"),
                   link = NULL,
-                  glmWeight = NULL, 
                   # params related to manual priors
-                  g_manual = NA_real_, 
-                  a_manual = NA_real_, 
-                  b_manual = NA_real_, 
+                  g_manual = NA_real_,
+                  a_manual = NA_real_,
+                  b_manual = NA_real_,
                   s_manual = NA_real_,
                   # params for even, vs, free knots
-                  Ctrl = list(),
-                  # evenCtrl = list(numMCmodels = 100,
-                  #                 enumerate = FALSE,
-                  #                 burnIn = 500,
-                  #                 mcIter = 500,
-                  #                 mcmcIter = 2000),
-                  # vsCtrl = list(burnIn = 500,
-                  #               mcmcIter = 2000),
-                  # freeCtrl = list(nu = 50, 
-                  #                 bir_p = 0.4, 
-                  #                 dea_p = 0.4,
-                  #                 initIter = 200, 
-                  #                 burnIn = 500,
-                  #                 mcmcIter = 2000,
-                  #                 thin = NULL),
+                  evenCtrl = list(numMCmodels = 100,
+                                  enumerate = FALSE,
+                                  burnIn = 500,
+                                  mcIter = 500,
+                                  mcmcIter = 5000),
+                  vsCtrl = list(burnIn = 500,
+                                mcmcIter = 2000),
+                  freeCtrl = list(nu = 50,
+                                  bir_p = 0.4,
+                                  dea_p = 0.4,
+                                  initIter = 200,
+                                  burnIn = 500,
+                                  mcmcIter = 2000,
+                                  thin = NULL),
                   # params for progress monitoring
                   printIter = 200,
                   # grid length for prediction
                   np = 200,
                   # to save the fitted values
-                  storeFitted = F)
+                  storeFitted = T)
 {
   ############################################################
   ############################################################
   ## model design matrix X, and response y
   if(!inherits(fm, "formula")) stop("Incorrect model fm")
-  tf = terms.formula(fm, specials = "ncs")
+  tf = stats::terms.formula(fm, specials = "ncs")
   smoothTermsIdx = attr(tf, "specials")$ncs
   if(is.null(smoothTermsIdx)) stop("no smooth term")
   allTerms = rownames(attr(tf, "factors"))
@@ -78,16 +70,16 @@ gambms = function(fm, dat,
   fakeFormula = ""; j=1
   for(i in seq_along(allTerms)){
     if(i == 1){ fakeFormula = paste0(fakeFormula, allTerms[i])
-    } else { 
+    } else {
       if(i %in% smoothTermsIdx) {fakeFormula = paste0(fakeFormula, smoothTermsSpec[[j]]$term); j=j+1}
       else fakeFormula = paste0(fakeFormula, allTerms[i])
     }
     if(i == 1){ fakeFormula = paste0(fakeFormula, "~")
     } else if(i < length(allTerms)) { fakeFormula = paste0(fakeFormula, "+") }
-    
+
   }
-  fakeFormula = formula(fakeFormula)
-  
+  fakeFormula = stats::formula(fakeFormula)
+
   mf = stats::model.frame(fakeFormula, dat = dat)
   y = stats::model.extract(mf, "response")
   X = stats::model.matrix(mf, dat = dat)
@@ -96,16 +88,16 @@ gambms = function(fm, dat,
   XLin = X[, !smterms, drop=F]
   X = X[, smterms, drop= F]
   n = length(y); p = ncol(X); pLin = ncol(XLin)
-  
+
   ## X should be normalized to lie between 0 and 1, inclusive
   mins = apply(X, 2, "min")
   maxs = apply(X, 2, "max")
   X_01 = scaleto01(X, mins, maxs)
-  xgrid_01 = seq(0, 1, length = np+2); 
+  xgrid_01 = seq(0, 1, length = np+2);
   xgrid_01 = xgrid_01[-c(1, length(xgrid_01))]
   Xgrid_01 = matrix(rep(xgrid_01, p), nrow=np)
   Xgrid = scalefrom01(Xgrid_01, mins, maxs)
-  
+
   ## orthogonalize XLin (column-wise centering and rescaling)
   XLinOrg = XLin
   if(ncol(XLin)>1){
@@ -117,27 +109,27 @@ gambms = function(fm, dat,
     XLinSubStd = sweep(XLinSubStd, 2, XLinSubSd, FUN="/")
     XLin = cbind(1, XLinSubStd)
   }
-  
+
   ## A, offset matrix
   A = stats::model.offset(mf)
   if(is.null(A)) A = rep(0, nrow(X))
-  
+
   ############################################################
   ############################################################
   ## check for family, link
   if(family == "bernoulli"){family = "binomial"; glmWeight = 1.0}
-  if(!(family %in%  c("binomial", "poisson", "gaussian"))) 
+  if(!(family %in%  c("binomial", "poisson", "gaussian")))
     stop("unsupported exponential family")
-  
+
   ## y_scale, glmWeight
   if(family == "binomial"){
-    if(is.null(glmWeight)) stop("no glmWeight")
+    glmWeight = 1.0;
   } else if (family == "poisson"){
     glmWeight = 1.0;
   } else if (family == "gaussian"){
     glmWeight = 1.0;
-  }  
-  
+  }
+
   ## link function
   if(is.null(link)) {
     if (family == "poisson"){link <- "log"}
@@ -151,7 +143,7 @@ gambms = function(fm, dat,
       if (!(link %in% c("log"))){ stop(paste0("Invalid link (", link , ") for ", family)) }
     }
   }
-  
+
   ## code familyLink
   getFamilyLinkCode = function(family, link){
     familyLink = NULL
@@ -167,12 +159,12 @@ gambms = function(fm, dat,
   }
   familyLinkCode = getFamilyLinkCode(family, link)
   if(is.null(familyLinkCode)) stop(paste0("Unsupported family - link : ", family, " - ", link))
-  
+
   ## code prior
   getPriorCode = function(prior){
     # c("Unit", "Hyper-g", "Uniform", "Hyper-g/n", "Beta-prime", "ZS-adapted", "Robust", "Intrinsic", "constant", "CH")
-    switch(prior, 
-           "Unit" = 0L, "Hyper-g" = 1L, "Uniform" = 2L, "Hyper-g/n" = 3L, "Beta-prime" = 4L, 
+    switch(prior,
+           "Unit" = 0L, "Hyper-g" = 1L, "Uniform" = 2L, "Hyper-g/n" = 3L, "Beta-prime" = 4L,
            "ZS-adapted" = 5L, "Robust" = 6L, "Intrinsic" = 7L, "constant" = 8L, "CH" = 9L,
            NULL)
   }
@@ -180,7 +172,7 @@ gambms = function(fm, dat,
   if(is.null(priorCode)) stop(paste0("Unsupported prior : ", prior))
   if(priorCode == 8 & is.na(g_manual)) stop("input g for constant g prior")
   if(priorCode == 9 & any(is.na(c(a_manual, b_manual, s_manual)))) stop("input a, b, s for CH g prior")
-  
+
   ############################################################
   ############################################################
   ## Define backup Rglm for each Exponential family
@@ -188,8 +180,8 @@ gambms = function(fm, dat,
     if(link == "logit"){
       Rglm = function(y, X, A, glmWeight, etastart){
         # res = matrix(glm(cbind(y, glmWeight -y) ~ X - 1, family = binomial(link = "logit"), offset = A)$coefficients, ncol=1)
-        res = tryCatch(matrix(glm.fit(X, cbind(y, glmWeight - y), etastart = etastart, offset = A, family = binomial(link = "logit"))$coefficients, ncol=1),
-                 warning = function(cnd) cnd)
+        res = tryCatch(matrix(stats::glm.fit(X, cbind(y, glmWeight - y), etastart = etastart, offset = A, family = stats::binomial(link = "logit"))$coefficients, ncol=1),
+                       warning = function(cnd) cnd)
         if(inherits(res, "warnings")) stop("MLE error")
         res[is.na(res)] = 0.0
         return(res)
@@ -198,7 +190,7 @@ gambms = function(fm, dat,
     if(link == "probit"){
       Rglm = function(y, X, A, glmWeight, etastart){
         # res = matrix(glm(cbind(y, glmWeight -y) ~ X - 1, family = binomial(link = "probit"), offset = A)$coefficients, ncol=1)
-        res = tryCatch(matrix(glm.fit(X, cbind(y, glmWeight - y), etastart = etastart, offset = A, family = binomial(link = "probit"))$coefficients, ncol=1),
+        res = tryCatch(matrix(stats::glm.fit(X, cbind(y, glmWeight - y), etastart = etastart, offset = A, family = stats::binomial(link = "probit"))$coefficients, ncol=1),
                        warning = function(cnd) cnd)
         if(inherits(res, "warnings")) stop("MLE error")
         res[is.na(res)] = 0.0
@@ -209,72 +201,68 @@ gambms = function(fm, dat,
   if (family == "poisson"){
     if(link == "log"){
       Rglm = function(y, X, A, glmWeight, etastart){
-        # res = matrix(glm(y ~ X - 1, family = "poisson", offset = A)$coefficients, ncol=1)  
-        res = tryCatch(matrix(glm.fit(X, y, etastart = etastart, offset = A, family = poisson())$coefficients, ncol=1),
+        # res = matrix(glm(y ~ X - 1, family = "poisson", offset = A)$coefficients, ncol=1)
+        res = tryCatch(matrix(stats::glm.fit(X, y, etastart = etastart, offset = A, family = stats::poisson())$coefficients, ncol=1),
                        warning = function(cnd) cnd)
         if(inherits(res, "warnings")) stop("MLE error")
         res[is.na(res)] = 0.0
         return(res)
-      } 
+      }
     }
   }
   if (family == "gaussian"){
     if(link == "identity"){
       Rglm = function(y, X, A, glmWeight, etastart){
-        # res = matrix(lm(y ~ X - 1, offset = A)$coefficients, ncol=1)  
+        # res = matrix(lm(y ~ X - 1, offset = A)$coefficients, ncol=1)
         # res = tryCatch(matrix(glm.fit(X, y, etastart = etastart, offset = A, family = gaussian())$coefficients, ncol=1),
         #                warning = function(cnd) cnd)
-        res = tryCatch(matrix(lm.fit(X, y)$coefficients, ncol=1),
+        res = tryCatch(matrix(stats::lm.fit(X, y)$coefficients, ncol=1),
                        warning = function(cnd) cnd)
         res[is.na(res)] = 0.0
         return(res)
-      } 
+      }
     }
   }
-  
+
   ############################################################
   ############################################################
   ## Define nearPD for use in RcppArmadillo
   nearPDres = function(x) as.matrix(Matrix::nearPD(x, doSym=T)$mat)
-  
+
+  ############################################################
+  ############################################################
   ## adjust maxk
-  if(is.null(maxkVec)){
-    uniqCnts = apply(X, 2, function(x) length(unique(x)))
-    maxkVec = rep(maxk, p)
-    if(any(uniqCnts < maxkVec)){
-      defects = colnames(X)[uniqCnts < maxkVec]
-      defectsUniqCnts = uniqCnts[uniqCnts < maxkVec]
-      defectsMaxkVec = maxkVec[uniqCnts < maxkVec]
-      for(i in seq_along(defects)){
-        warning(paste0("possible issue with variable ", defects[i], 
-                       " as the number of unique counts ", defectsUniqCnts[i],
-                       " is less than maxk ",  defectsMaxkVec[i]))
-      }
-      warning("readjusting to be maxk < unique counts")
-      maxkVec[uniqCnts < maxkVec] = uniqCnts[uniqCnts < maxkVec] - 1
+  uniqCnts = apply(X_01, 2, function(x) length(unique(x)))
+  if(any(uniqCnts < maxkVec)){
+    defects = colnames(X)[uniqCnts < maxkVec]
+    defectsUniqCnts = uniqCnts[uniqCnts < maxkVec]
+    defectsMaxkVec = maxkVec[uniqCnts < maxkVec]
+    for(i in seq_along(defects)){
+      warning(paste0("possible issue with variable ", defects[i],
+                  " as the number of unique counts ", defectsUniqCnts[i],
+                  " is less than maxk ",  defectsMaxkVec[i]))
     }
-    # maxkVec[uniqCnts - maxk < 5] = uniqCnts[uniqCnts - maxk < 5] - 5
+    warning("readjusting to be maxk < unique counts")
+    maxkVec[uniqCnts < maxkVec] = uniqCnts[uniqCnts < maxkVec] - 1
   }
-  
-  
+
+
   ############################################################
   ############################################################
   ## RUN
-  # if(CRADNS) maxk = maxk - 2
   if(knotConfig == "EVEN"){
-    evenCtrl = Ctrl
     if(is.null(evenCtrl$numMCmodels)) evenCtrl$numMCmodels = 100L
     if(is.null(evenCtrl$enumerate)) evenCtrl$enumerate = F
     if(is.null(evenCtrl$burnIn)) evenCtrl$burnIn = 500L
     if(is.null(evenCtrl$mcIter)) evenCtrl$mcIter = 2000L
     if(is.null(evenCtrl$mcmcIter)) evenCtrl$mcmcIter = 2000L
-    res = gambmsEVEN(y, 
-                     glmWeight, 
-                     X_01, 
+    res = .gambmsEVEN(y,
+                     glmWeight,
+                     X_01,
                      Xgrid_01,
                      XLin,
-                     A, 
-                     maxkVec, 
+                     A,
+                     maxkVec,
                      lambdaVec,
                      familyLinkCode,
                      priorCode,
@@ -286,24 +274,23 @@ gambms = function(fm, dat,
                      evenCtrl$numMCmodels,
                      evenCtrl$mcIter,
                      evenCtrl$mcmcIter + evenCtrl$burnIn,
-                     Rglm, nearPDres, 
+                     Rglm, nearPDres,
                      storeFitted, printIter)
   } else if(knotConfig == "FREE"){
-    freeCtrl = Ctrl
     if(is.null(freeCtrl$nu)) freeCtrl$nu = 100
     if(is.null(freeCtrl$bir_p)) freeCtrl$bir_p = 0.4
     if(is.null(freeCtrl$dea_p)) freeCtrl$dea_p = 0.4
     if(is.null(freeCtrl$initIter)) freeCtrl$initIter = 200L
     if(is.null(freeCtrl$burnIn)) freeCtrl$burnIn = 500L
     if(is.null(freeCtrl$mcmcIter)) freeCtrl$mcmcIter = 2000L
-    if(is.null(freeCtrl$thin)) freeCtrl$thin = maxk
-    res = gambmsFREE(y, 
-                     glmWeight, 
-                     X_01, 
+    if(is.null(freeCtrl$thin)) freeCtrl$thin = max(maxkVec)
+    res = .gambmsFREE(y,
+                     glmWeight,
+                     X_01,
                      Xgrid_01,
                      XLin,
-                     A, 
-                     maxkVec, 
+                     A,
+                     maxkVec,
                      lambdaVec,
                      familyLinkCode,
                      priorCode,
@@ -314,19 +301,18 @@ gambms = function(fm, dat,
                      freeCtrl$initIter,
                      freeCtrl$mcmcIter + freeCtrl$burnIn,
                      freeCtrl$thin,
-                     freeCtrl$bir_p, freeCtrl$dea_p, freeCtrl$nu, 
+                     freeCtrl$bir_p, freeCtrl$dea_p, freeCtrl$nu,
                      Rglm, nearPDres, storeFitted, printIter)
   } else if(knotConfig == "VS"){
-    vsCtrl = Ctrl
     if(is.null(vsCtrl$burnIn)) vsCtrl$burnIn = 500L
     if(is.null(vsCtrl$mcmcIter)) vsCtrl$mcmcIter = 2000L
-    res = gambmsVS(y, 
-                   glmWeight, 
-                   X_01, 
+    res = .gambmsVS(y,
+                   glmWeight,
+                   X_01,
                    Xgrid_01,
                    XLin,
-                   A, 
-                   maxkVec, 
+                   A,
+                   maxkVec,
                    lambdaVec,
                    familyLinkCode,
                    priorCode,
@@ -360,7 +346,7 @@ gambms = function(fm, dat,
     Xgrid = Xgrid,
     np = np
   )
-  
+
   if(knotConfig == "EVEN"){
     if(res$enumerate){  # DEMC
       out$enumerate = T
@@ -393,7 +379,7 @@ gambms = function(fm, dat,
     out$knotLocs = res$KNOTS[getIdx]
     out$knotLocsIdx = res$KNOTSIDX[getIdx]
     out$acceptProb = res$AcceptProp
-    
+
     ppp = matrix(0, nrow = length(out$knotLocs), ncol = out$p)
     for(i in seq_along(out$knotLocs)){
       for(j in 1:out$p){
@@ -401,10 +387,8 @@ gambms = function(fm, dat,
       }
     }
     out$numknots = ppp
-    
-    # out$fuckyou = res$fuckyou
   }
-  
+
   out$lpydiagnosis = data.frame(
     lpy = c(res$lpy),
     r2Qm = c(res$r2Qm),
@@ -412,26 +396,34 @@ gambms = function(fm, dat,
     comp2 = c(res$comp2),
     comp3 = c(res$comp3)
   )[getIdx, ]
-  
+
   out$linears = res$PREDLINEARS[getIdx, ]
   out$predicted = res$PREDSMOOTHS[getIdx, ]
   out$fitted = res$FITTEDSMOOTHS[getIdx, ]
   out$g_sampled = res$G[getIdx, ]
-  if(family == "gaussian") out$sigma2 = 1/res$PHI[getIdx, ] 
-  
+  if(family == "gaussian") out$sigma2 = 1/res$PHI[getIdx, ]
+
   # adjust for centering of linear coefficients
   if(ncol(XLin)>1){
     linbetasidx = 2:ncol(XLin)
     out$linears[,1] = out$linears[,1] + out$linears[,linbetasidx, drop=F] %*% (XLinSubMn / XLinSubSd)
     out$linears[,-1] = sweep(out$linears[,-1, drop=F], 2, XLinSubSd, FUN="/")
   }
-  
+
   attr(out, "class") = "gambms" # S3 object
   return(out)
 }
 
-###### print method ######
-print.gambms = function(x){
+#' Title
+#'
+#' @param x
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+print.gambms = function(x, ...){
   cat("fm: \n")
   print(x$fm)
   cat("\n")
@@ -447,12 +439,21 @@ print.gambms = function(x){
   # cat("Natural spLine:                                  ", x$NS, "\n")
   # if(x$NS){
   #   cat("  Natural spLine boundary at:                    ", x$bdmargin, "\n")
-  # } 
+  # }
   cat("------------------------------------------------------------ \n")
 }
-print.gambma = print.gambms
 
-summary.gambms = function(x){
+#' Title
+#'
+#' @param object
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+summary.gambms = function(object, ...){
+  x = object
   if(is.null(dim(x$X))) x$X = matrix(x$X, ncol = 1)
   if(is.null(dim(x$linears))) x$linears = matrix(x$linears, ncol = 1)
   mean_post = colMeans(x$linears)
@@ -470,16 +471,16 @@ summary.gambms = function(x){
     upper95 = upper95
   )
   rownames(linear_coeff) = colnames(x$XLinOrg)
-  
+
   g_samp = data.frame(
     mean = mean(x$g_sampled),
     median = median(x$g_sampled),
-    sd = sd(x$g_sampled),
+    sd = stats::sd(x$g_sampled),
     lower95 = quantile(x$g_sampled, 0.025),
     upper95 = quantile(x$g_sampled, 1-0.025)
   )
   rownames(g_samp) = "g"
-  
+
   if(x$family == "gaussian"){
     sigsamp = sqrt(x$sigma2)
     sig_samp = data.frame(
@@ -491,7 +492,7 @@ summary.gambms = function(x){
     )
     rownames(sig_samp) = "sig"
   }
-  
+
   cat("fm: \n")
   print(x$fm)
   cat("\n")
@@ -508,7 +509,7 @@ summary.gambms = function(x){
   # cat("Natural spLine:                                  ", x$NS, "\n")
   # if(x$NS){
   # cat("  Natural spLine boundary at:                    ", x$bdmargin, "\n")
-  # } 
+  # }
   cat("------------------------------------------------------------- \n")
   cat("Marginal probability that sm is linear: \n")
   tmp = colMeans(x$numknots == 0)
@@ -528,22 +529,37 @@ summary.gambms = function(x){
     cat("------------------------------------------------------------- \n")
   }
 }
-summary.gambma = summary.gambms
 
-###### plot method ######
-plot.gambms = function(x, alpha = 0.025, flist = NULL, elapsed = NULL, show_plot = T, ylim= NULL, 
-                       show_title = T, Linadj = NULL, n_row = NULL)
+
+
+#' Title
+#'
+#' @param x
+#' @param alpha
+#' @param ylim
+#' @param n_row
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plot.gambms = function(x,
+                       alpha = 0.025,
+                       ylim = NULL,
+                       n_row = NULL,
+                       ...)
 {
-  old_pars <- par(no.readonly = TRUE)
-  on.exit(par(old_pars), add = TRUE)
-  
+  old_pars <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(old_pars), add = TRUE)
+
   p = x$p
   pLin = x$pLin
   family = x$family
   knotConfig = x$knotConfig
   maxk = x$maxk
   Xgrid = x$Xgrid; np = x$np
-  
+
   ## PREDtable
   PREDtable = data.frame(
     f = integer(),
@@ -552,42 +568,29 @@ plot.gambms = function(x, alpha = 0.025, flist = NULL, elapsed = NULL, show_plot
     lb = double(),
     ub = double()
   )
-  if(!is.null(flist)){
-    PREDtable$true = double()
-    PREDtable$cover = integer()
-  }
   if(is.null(x$enumerate)) x$enumerate = T
-  if(is.null(x$whichmethod)) x$whichmethod = "MH"
   idx = 1:np
-  
+
   if(is.null(colnames(x$X))) x$X = paste0("sm(x", 1:p, ")")
   substr_xnames = function(x, n){
     substr(x, n, nchar(x) - 1)
   }
   xnames = colnames(x$X)
-  
+
   for(j in 1:p){
     xdata = x$data[, j+pLin]
     xgrid = Xgrid[,j]
     Fits = x$predicted[, idx]
-    Fits_mean = colMeans(Fits) 
-    Fits_ub = apply(Fits, 2, function(x) quantile(x, 1 - alpha)) 
+    Fits_mean = colMeans(Fits)
+    Fits_ub = apply(Fits, 2, function(x) quantile(x, 1 - alpha))
     Fits_lb = apply(Fits, 2, function(x) quantile(x, alpha))
     predtable = data.frame(f = j, grid = xgrid, mean = Fits_mean, lb = Fits_lb, ub = Fits_ub)
-    if(!is.null(flist)){
-      ytrue = flist[[j]](xgrid); ytrue = ytrue - mean(flist[[j]](xdata))
-      cover = ifelse((ytrue > Fits_lb) & (ytrue < Fits_ub) , 1, 0)
-      predtable$true = ytrue
-      predtable$cover = cover
-      if(!is.null(Linadj)){
-        if(Linadj[[j]] & sum(cover)/length(xgrid) < 0.3){ predtable$cover = 0 }
-      }
-    }
     PREDtable = rbind(PREDtable, predtable)
     idx = idx + np
   }
-  
+
   ## plot
+  show_plot = T
   if(show_plot == T){
     opar = par(no.readonly = T)
     if(p < 4){
@@ -596,10 +599,9 @@ plot.gambms = function(x, alpha = 0.025, flist = NULL, elapsed = NULL, show_plot
       if(is.null(n_row)) n_row = 2;
       plotarray = c(n_row, ceiling((p)/n_row))
     }
-    par(mfrow=plotarray)
-    # par(mar=c(2.5, 2.5, 0.5, 0.5), mgp=c(1.5,0.5,0), oma = c(0,0,2,0))
-    if(show_title == F) par(oma = c(0,0,0,0))
-    
+    graphics::par(mfrow=plotarray)
+    graphics::par(mar=c(2.5, 2.5, 0.5, 0.5), mgp=c(1.5,0.5,0), oma = c(0,0,2,0))
+
     idx = 1:np
     for(j in 1:p){
       predtable = PREDtable[PREDtable$f ==j ,]
@@ -609,99 +611,143 @@ plot.gambms = function(x, alpha = 0.025, flist = NULL, elapsed = NULL, show_plot
       Fits_lb = predtable$lb
       ytrue = predtable$true
       if(!is.null(ylim)){
-        graphics::plot(xgrid, Fits_mean, type="n", 
+        graphics::plot(xgrid, Fits_mean, type="n",
                        xlab = xnames[j], ylab = paste0("f(",xnames[j], ")"), ylim = ylim)
       } else {
         tmpylim = range(c(Fits_mean, Fits_ub, Fits_lb))
         tmpylim[1] = tmpylim[1] - 0.2; tmpylim[2] = tmpylim[2] + 0.2;
-        graphics::plot(xgrid, Fits_mean, type="n", xlab = xnames[j], 
+        graphics::plot(xgrid, Fits_mean, type="n", xlab = xnames[j],
                        ylab = bquote(paste('f'[.(j)]*'('*.(xnames[j])*')')), ylim = tmpylim)
       }
       graphics::polygon(x = c(xgrid, rev(xgrid)), y = c(Fits_lb, rev(Fits_ub)), col = "grey", border = NA)
       graphics::lines(xgrid, Fits_mean, col = "blue", lty=2)
-      if(!is.null(flist)) graphics::lines(xgrid, ytrue, col = "red")
       graphics::rug(x$X[,j])
       idx = idx + np
-      if(!is.null(flist)){
-        rmse = sqrt(mean((Fits_mean - ytrue)^2))
-        title(main = paste0("logrmse ", signif(log(rmse), 3)))
-      }
     }
-    # hist(x$g_sampled, nclass=30, probability = T, 
-    #      xlab= "g", col = "grey", border = "white", main ="")
-    # if(x$family=="gaussian"){
-    #   hist(sqrt(x$sigma2), nclass=30, probability = T, 
-    #        xlab= "resid. std. dev.", col = "grey", border = "white", main ="")
-    # }
     title_ = paste0(family, ", ", knotConfig, ", maxk ", max(maxk))
-    if(!is.null(elapsed)) title_ = paste0(title_, ", elapsed ", paste0(signif(elapsed, 3), attr(elapsed, "units")))
-    # rmse = sqrt(mean((Fits_mean - ytrue)^2))
-    # title_ = paste0(title_,  ", logrmse ", signif(log(rmse), 3))
     if(!is.null(x$acceptProb)) title_ = paste0(title_,  ", Accept ", signif(x$acceptProb, 3))
-    if(show_title == T) mtext(title_, outer= T, font=2)
-    par(opar)
-    
+    mtext(title_, outer= T, font=2)
+    graphics::par(opar)
+
   }
   return(invisible(PREDtable))
 }
-plot.gambma = plot.gambms
 
+#' Title
+#'
+#' @param x
+#' @param n_row
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotnumknot = function(x, n_row, ...){
+  UseMethod("plotnumknot")
+}
 
+#' Title
+#'
+#' @param x
+#' @param n_row
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotnumknot.gambms = function(x, n_row, ...){
+  old_pars <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(old_pars), add = TRUE)
 
-plotnumknot = function(x, n_row = NULL){
-  old_pars <- par(no.readonly = TRUE)
-  on.exit(par(old_pars), add = TRUE)
-  
-  if(x$p < 4){plotarray = c(1, x$p)} else {if(is.null(n_row)) n_row = 2 ;plotarray = c(n_row, ceiling(x$p/n_row))}
-  par(mfrow=plotarray)
-  # par(mar=c(2.5, 2.5, 0.5, 0.5), mgp=c(1.5,0.5,0), oma = c(0,0,0,0))
-  if(is.null(x$whichmethod)){
-    x$whichmethod = "fuck"
-  }
+  if(x$p < 4){plotarray = c(1, x$p)}
+  else {if(!hasArg(n_row)) n_row = 2 ;plotarray = c(n_row, ceiling(x$p/n_row))}
+  graphics::par(mfrow=plotarray)
+  graphics::par(mar=c(2.5, 2.5, 0.5, 0.5), mgp=c(1.5,0.5,0), oma = c(0,0,2,0))
 
-  if(is.null(colnames(x$X))) x$X = paste0("sm(x", 1:p, ")")
+  if(is.null(colnames(x$X))) x$X = paste0("sm(x", 1:x$p, ")")
   substr_xnames = function(x, n){
     substr(x, n, nchar(x) - 1)
   }
   xnames = colnames(x$X)
 
-  if(x$whichmethod == "Enumerate"){
-    lpytoprob = function(x){
-      x = x - max(x)
-      x = exp(x)
-      x = x / sum(x)
-      x
-    }
-    TMP = as.data.frame(cbind(x$knotnumsAll, lpytoprob(x$lpydiagnosis$lpy)))
-    colnames(TMP) = c(paste0("sm", 1:x$p), "py")
-    for(i in 1:x$p){
-      tmp = aggregate(py~., data = TMP[, c(i, x$p+1)], sum)
-      tmp$py = tmp$py / sum(tmp$py)
-      plot(tmp, type="h", ylab="")
-      # title(main = "Marginal Posterior of Number of Knots")
-    }
-  } else {
-    for(i in 1:x$p){
-      plot(table(x$numknots[,i])/ sum(table(x$numknots[,i])),xlab = xnames[i], ylab = "", ylim = c(0, 1),
-           lwd = 3, col = "skyblue")
-      # title(main = "Marginal Posterior of Number of Knots")
-    }
+  for(i in 1:x$p){
+    plot(table(x$numknots[,i])/ sum(table(x$numknots[,i])),xlab = xnames[i], ylab = "", ylim = c(0, 1),
+         lwd = 3, col = "skyblue")
+    mtext("Marginal Posterior of Number of Knots", outer= T, font=2)
   }
-  
+
   return(invisible(0))
 }
 
 
-## posterior predictive
-bayesResiduals = function(fit, 
-                          nReplications= 10, 
-                          nBins = NULL){
-  old_pars <- par(no.readonly = TRUE)
-  on.exit(par(old_pars), add = TRUE)
-  
-  par(mfrow=c(1,1))
+#' Title
+#'
+#' @param object
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+fitted.gambms = function(object, ...){
+  fit = object
+  y = fit$y
+  XLin = fit$XLin
+  linears = fit$linears
+  fitted = fit$fitted
+  N = length(y); M = nrow(linears); PLin = fit$pLin; PSmo = fit$p
+  if(is.null(M)) M = length(linears)
+  fittedSums = matrix(0, nrow = M, ncol = N)
+  start = end = 1;
+  for(i in 1:PSmo){
+    end = start + N - 1
+    fittedSums = fittedSums + fitted[, start:end]
+    start = end + 1
+  }
+  postPred = linears %*% t(XLin) + fittedSums
+  return(postPred)
+}
+
+#' Title
+#'
+#' @param fit
+#' @param nReplications
+#' @param nBins
+#' @param ylim
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotresiduals = function(fit, nReplications, nBins, ylim, ...){
+  UseMethod("plotresiduals")
+}
+
+
+#' Title
+#'
+#' @param fit
+#' @param nReplications
+#' @param nBins
+#' @param ylim
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotresiduals.gambms = function(fit,
+                                nReplications= 10,
+                                nBins = NULL, ylim, ...){
+  old_pars <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(old_pars), add = TRUE)
+
+  graphics::par(mfrow=c(1,1))
   # par(mar=c(2.5, 2.5, 0.5, 0.5), mgp=c(1.5,0.5,0), oma = c(0,0,0,0))
-  
+
   ## get posterior predictives
   y = fit$y
   XLin = fit$XLin
@@ -713,27 +759,31 @@ bayesResiduals = function(fit,
   start = end = 1;
   for(i in 1:PSmo){
     end = start + N - 1
-    fittedSums = fittedSums + fitted[, start:end] 
+    fittedSums = fittedSums + fitted[, start:end]
     start = end + 1
   }
   postPred = linears %*% t(XLin) + fittedSums
+
   if(is.infinite(nReplications)){
     showIdx = 1:M
   } else showIdx = sample(M, nReplications)
-  
+
   if(fit$family == "gaussian"){
     ## identity link
     etaReps = postPred
     cutoff = max(abs(sweep(etaReps, 2, y)))
+    if(!hasArg(ylim)) ylim = c(-cutoff, cutoff)
     xlim = range(y)
-    plot(y-etaReps[1,], y, xlim = xlim, ylim = c(-cutoff, cutoff), type="n",
+    plot( y,y-etaReps[1,], xlim = xlim, ylim = ylim, type="n",
          xlab = "Observations", ylab = "Residuals",
-         main = paste0("Residuals Plot, ", nReplications, " replications" ))
+         main = paste0("Residual Plot, ", nReplications, " replications" ))
     for(i in showIdx){
       points(y, y-etaReps[i,], pch = ".")
     }
-    abline(h=0, col="black")
-    
+    abline(h=1.96, lty=2)
+    abline(h=-1.96, lty=2)
+    abline(h = 0)
+
   } else {
     ## count data residuals: do binning
     if(is.null(nBins)) nBins= ceiling(sqrt(N))
@@ -742,7 +792,7 @@ bayesResiduals = function(fit,
 
     sortIdx = etaSort = postPredSort = ySort = rep(0, N)
     avgStd = avgExp = avgRes = matrix(0, nrow = nReplications, ncol = nBins)
-    
+
     if(fit$family == "binomial"){
       if(fit$link == "logit"){
         linkinv = binomial(link="logit")$linkinv
@@ -762,13 +812,13 @@ bayesResiduals = function(fit,
             sd(ySort[binsIdx ==j] - etaSort[binsIdx == j])
         }
       }
-      
+
     } else if(fit$family == "poisson"){
       if(fit$link == "log"){
         linkinv = poisson(link = "log")$linkinv
         etaReps = linkinv(postPred)
       }
-      
+
       for(i in seq_along(showIdx)){
         ## do binning
         sortIdx = order(postPred[showIdx[i], ])
@@ -781,9 +831,10 @@ bayesResiduals = function(fit,
         }
       }
     }
-    
+
     cutoff = max(3, max(abs(avgRes)))
-    plot(avgExp, avgRes, ylim = c(-cutoff, cutoff),
+    if(!hasArg(ylim)) ylim = c(-cutoff, cutoff)
+    plot(avgExp, avgRes, ylim = ylim,
          type="n",
          xlab = "Average Predicteds per bins", ylab = "Average Scaled Residuals per bins",
          main = paste0("Binnded Residuals Plot, ", nReplications, " replications" ))
@@ -794,50 +845,9 @@ bayesResiduals = function(fit,
     }
     abline(h=1.96, lty=2)
     abline(h=-1.96, lty=2)
-    abline(h = 0) 
+    abline(h = 0)
   }
 }
-
-plotTrace = function(fit){
-  old_pars <- par(no.readonly = TRUE)
-  on.exit(par(old_pars), add = TRUE)
-  
-  
-  
-  
-  par(mfrow=c(1,2))
-  tmp = tryCatch(acf(fit$lpydiagnosis$lpy),
-                 error = function(cnd) cnd)
-  if(inherits(tmp, "error")){
-    tmp = rep(0, 20)
-    plot(tmp)
-    ess = 1
-  } else {
-    ess = length(fit$lpydiagnosis$lpy)/(1+2*sum(tmp$acf))
-  }
-  
-  plot(fit$lpydiagnosis$lpy, type="l",
-       main = paste0("N ", length(fit$lpydiagnosis$lpy),
-                     ", ESS ", signif(ess, 4)))
-  return(invisible(ess))
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
