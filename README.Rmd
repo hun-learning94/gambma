@@ -88,14 +88,14 @@ plot(fit)
 plotnumknot(fit)
 plotresiduals(fit)
 ```
-```{r, fig.height=4, echo=F}
+```{r, fig.height=3, echo=F}
 library(gambms)
 load("test/fit_Boston.rdata")
 summary(fit_Boston)
 plot(fit_Boston)
 plotnumknot(fit_Boston)
 ```
-```{r, fig.height=3, echo=F}
+```{r, fig.height=4, echo=F}
 plotresiduals(fit_Boston)
 ```
 
@@ -122,7 +122,16 @@ plot(fit)
 plotnumknot(fit)
 plotresiduals(fit)
 ```
-
+```{r, fig.height=3, echo=F}
+library(gambms)
+load("test/fit_Pima.rdata")
+summary(fit_Pima)
+plot(fit_Pima)
+plotnumknot(fit_Pima)
+```
+```{r, fig.height=4, echo=F}
+plotresiduals(fit_Pima)
+```
 
 <!-- What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so: -->
 

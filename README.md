@@ -149,6 +149,40 @@ plotnumknot(fit)
 plotresiduals(fit)
 ```
 
+    #> fm: 
+    #> diabetes ~ ncs(pregnant, nk = maxk, lambda = lambda) + ncs(glucose, 
+    #>     nk = maxk, lambda = lambda) + ncs(pressure, nk = maxk, lambda = lambda) + 
+    #>     ncs(triceps, nk = maxk, lambda = lambda) + ncs(mass, nk = maxk, 
+    #>     lambda = lambda) + ncs(pedigree, nk = maxk, lambda = lambda) + 
+    #>     ncs(age, nk = maxk, lambda = lambda)
+    #> 
+    #> Family:                                           binomial 
+    #> Link function:                                    logit 
+    #> g-prior:                                          Robust 
+    #> ------------------------------------------------------------ 
+    #> Sample size:                                      532 
+    #> Number of smooth covariates:                      7 
+    #> Number of linear terms (including intercept):     1 
+    #> Knot configuration:                               EVEN 
+    #> Maximum number of knots:                          15 15 15 15 15 15 15 
+    #> Prior mean on number of knots:                    1 1 1 1 1 1 1 
+    #> ------------------------------------------------------------- 
+    #> Marginal probability that sm is linear: 
+    #> pregnant  glucose pressure  triceps     mass pedigree      age 
+    #>   0.2100   0.7300   0.7200   0.6900   0.0430   0.6800   0.0075 
+    #> ------------------------------------------------------------- 
+    #> Linear coefficients:
+    #>                mean  median      sd z_score lower95 upper95
+    #> (Intercept) -1.1698 -1.1719  0.1235 -9.4689 -1.4064 -0.9265
+    #> ------------------------------------------------------------ 
+    #> Sampled g values:
+    #>        mean    median        sd   lower95   upper95
+    #> g 1715.3347 1405.5127 1092.6665  598.5150 4607.4314
+    #> -------------------------------------------------------------
+
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-8-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+
 <!-- What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so: -->
 <!-- ```{r cars} -->
 <!-- summary(cars) -->
