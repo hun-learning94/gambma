@@ -221,6 +221,39 @@ lines(u, dtCCH(u, a, b, z, s, nu, theta), col="#008631", lwd=2, lty=2)
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
+FYI, I built the package and conducted the simulations under the
+following environment:
+
+``` r
+sessionInfo()
+#> R version 4.2.2 (2022-10-31 ucrt)
+#> Platform: x86_64-w64-mingw32/x64 (64-bit)
+#> Running under: Windows 10 x64 (build 22621)
+#> 
+#> Matrix products: default
+#> 
+#> locale:
+#> [1] LC_COLLATE=English_United States.utf8 
+#> [2] LC_CTYPE=English_United States.utf8   
+#> [3] LC_MONETARY=English_United States.utf8
+#> [4] LC_NUMERIC=C                          
+#> [5] LC_TIME=English_United States.utf8    
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> other attached packages:
+#> [1] gambms_0.0.0.9000
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] Rcpp_1.0.9      digest_0.6.31   lifecycle_1.0.3 magrittr_2.0.3 
+#>  [5] evaluate_0.19   highr_0.10      rlang_1.0.6     stringi_1.7.8  
+#>  [9] cli_3.5.0       rstudioapi_0.14 vctrs_0.5.1     rmarkdown_2.19 
+#> [13] tools_4.2.2     stringr_1.5.0   glue_1.6.2      xfun_0.36      
+#> [17] yaml_2.3.6      fastmap_1.1.0   compiler_4.2.2  htmltools_0.5.4
+#> [21] knitr_1.41
+```
+
 <!-- What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so: -->
 <!-- ```{r cars} -->
 <!-- summary(cars) -->
