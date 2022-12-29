@@ -221,8 +221,10 @@ lines(u, dtCCH(u, a, b, z, s, nu, theta), col="#008631", lwd=2, lty=2)
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
-FYI, I built the package and conducted the simulations under the
-following environment:
+## System environment
+
+I built the package and conducted the simulations under the following
+environment:
 
 ``` r
 sessioninfo::session_info()
@@ -263,7 +265,7 @@ sessioninfo::session_info()
 #>  xfun          0.36       2022-12-21 [2] CRAN (R 4.2.2)
 #>  yaml          2.3.6      2022-10-18 [2] CRAN (R 4.2.2)
 #> 
-#>  [1] C:/Users/USER/AppData/Local/Temp/RtmpwLT6F4/temp_libpath22a068b1197
+#>  [1] C:/Users/USER/AppData/Local/Temp/RtmpwLT6F4/temp_libpath22a066392430
 #>  [2] C:/Users/USER/AppData/Local/R/win-library/4.2
 #>  [3] C:/Program Files/R/R-4.2.2/library
 #> 
