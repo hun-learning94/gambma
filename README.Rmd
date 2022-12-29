@@ -56,8 +56,10 @@ fit_sim = tryCatch(
 )
 plot(fit_sim)
 ```
-```{r, echo=F}
-xfun::embed_file("test/fit_sim_plot.pdf")
+```{r, fig.height=3, echo=F}
+library(gambms)
+load("test/fit_sim.rdata")
+plot(fit_sim)
 ```
 
 ### Real data 1) Boston Housing Prices (Gaussian, VS-knot)
@@ -85,6 +87,16 @@ summary(fit)
 plot(fit)
 plotnumknot(fit)
 plotresiduals(fit)
+```
+```{r, fig.height=4, echo=F}
+library(gambms)
+load("test/fit_Boston.rdata")
+summary(fit_Boston)
+plot(fit_Boston)
+plotnumknot(fit_Boston)
+```
+```{r, fig.height=3, echo=F}
+plotresiduals(fit_Boston)
 ```
 
 ### Real data 2) Pima Indian Diabetes (Bernoulli, EVEN-knot)
