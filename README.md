@@ -50,6 +50,8 @@ fit_sim = tryCatch(
 plot(fit_sim)
 ```
 
+![fit_sim_plot](test/fit_sim_plot.pdf)
+
 ### Real data 1) Boston Housing Prices (Gaussian, VS-knot)
 
 ``` r

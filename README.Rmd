@@ -57,9 +57,7 @@ fit_sim = tryCatch(
 plot(fit_sim)
 ```
 
-```{r out.width = "80%", include=F}
-knitr::include_graphics("test/fit_sim_plot.pdf")
-```
+![fit_sim_plot](test/fit_sim_plot.pdf)
 
 ### Real data 1) Boston Housing Prices (Gaussian, VS-knot)
 ```{r, eval=F}
