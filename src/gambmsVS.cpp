@@ -218,8 +218,8 @@ Rcpp::List gambmsVS(const arma::vec &y,
     if((i+1) % printiter == 0) {
       Rcpp::Rcout <<  "Gibbs iter " << (i+1) << ", MLE failed " << MLEfailed <<  "\n";
       Rcpp::Rcout << "Avg time per single update " << std::chrono::duration<double>(TOTAL).count() / i << "\n";
-      Rcpp::Rcout << " -  MLE and model evidence " << std::chrono::duration<double>(TOTAL1).count() / i << "\n";
-      Rcpp::Rcout << " -  Posterior sampling " << std::chrono::duration<double>(TOTAL2).count() / i << "\n";
+      // Rcpp::Rcout << " -  MLE and model evidence " << std::chrono::duration<double>(TOTAL1).count() / i << "\n";
+      // Rcpp::Rcout << " -  Posterior sampling " << std::chrono::duration<double>(TOTAL2).count() / i << "\n";
 
       // Rcpp::Rcout << "Total num of atomic iterations " << (int) ssItr << "\n";
       // Rcpp::Rcout << zP.t() << "\n";
@@ -241,7 +241,7 @@ Rcpp::List gambmsVS(const arma::vec &y,
   OUT["PREDSMOOTHS"] = PREDSMOOTHS;
   OUT["PREDLINEARS"] = PREDLINEARS;
 
-  if(getmeMAP){
+  if(getmeMAP){ // for use in FREE-knot
     arma::vec knotsMax;
     arma::uvec knotsidxMax, betaidxMax;
     arma::mat B_trMax, B_prMax;

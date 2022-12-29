@@ -255,6 +255,7 @@ Rcpp::List gambmsFREE(const arma::vec &y,
     // BtrNcol(s) = BtrCurr.n_cols;
 
     // make prediction, store results
+    FITTEDSMOOTHS.row(s) = FittedSmooths.t();
     PREDSMOOTHS.row(s) = PredSmooths.t();
     PREDLINEARS.row(s) = PredLinears.t();
     G(s) = g_;
@@ -270,10 +271,10 @@ Rcpp::List gambmsFREE(const arma::vec &y,
         "th model selection iterations, the most recent numknots is " << knotsCurr.n_elem - (PLin + P) <<
           ", Accepted " << num_of_acpt  << " out of " << totaliter  << ", MLE failed "<< num_failed << '\n';
       Rcpp::Rcout << " - Avg time per single update " << std::chrono::duration<double>(TOTAL).count() / (TOTALiter) << "\n";
-      Rcpp::Rcout << "  - Proposal (Rev. Jump) " << P* thin * std::chrono::duration<double>(TOTAL1).count() / TOTAL1iter << "\n";
-      Rcpp::Rcout << "  - Density evaluation (MLE) " << P* thin * std::chrono::duration<double>(TOTAL2).count() / TOTAL2iter << "\n";
-      Rcpp::Rcout << "  - The rest is squandered on the failed attempts to jump " << "\n";
-      Rcpp::Rcout << " - Total num of atomic iterations " << (int) totaliter << "\n";
+      // Rcpp::Rcout << "  - Proposal (Rev. Jump) " << P* thin * std::chrono::duration<double>(TOTAL1).count() / TOTAL1iter << "\n";
+      // Rcpp::Rcout << "  - Density evaluation (MLE) " << P* thin * std::chrono::duration<double>(TOTAL2).count() / TOTAL2iter << "\n";
+      // Rcpp::Rcout << "  - The rest is squandered on the failed attempts to jump " << "\n";
+      // Rcpp::Rcout << " - Total num of atomic iterations " << (int) totaliter << "\n";
     }
 
   }
@@ -293,13 +294,6 @@ Rcpp::List gambmsFREE(const arma::vec &y,
   OUT["PREDSMOOTHS"] = PREDSMOOTHS;
   OUT["PREDLINEARS"] = PREDLINEARS;
   OUT["AcceptProp"] = num_of_acpt / totaliter;
-  // OUT["fuckyou"] = Rcpp::DataFrame::create(
-  //   _["proposedLPY"] = proposedLPY,
-  //   _["currentLPY"] = currentLPY,
-  //   _["PropToCurr"] = PropToCurr,
-  //   _["CurrToProp"] = CurrToProp,
-  //   _["BtrNcol"] = BtrNcol
-  // );
 
   return OUT;
 }

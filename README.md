@@ -47,9 +47,7 @@ fit_sim = tryCatch(
          freeCtrl=list(mcmcIter = 4000, thin = maxk)),
   error = function(cnd)cnd
 )
-summary(fit_sim)
 plot(fit_sim)
-plotnumknot(fit_sim)
 ```
 
 ### Real data 1) Boston Housing Prices (Gaussian, VS-knot)
