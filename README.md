@@ -225,33 +225,54 @@ FYI, I built the package and conducted the simulations under the
 following environment:
 
 ``` r
-sessionInfo()
-#> R version 4.2.2 (2022-10-31 ucrt)
-#> Platform: x86_64-w64-mingw32/x64 (64-bit)
-#> Running under: Windows 10 x64 (build 22621)
+sessioninfo::session_info()
+#> ─ Session info ───────────────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.2.2 (2022-10-31 ucrt)
+#>  os       Windows 10 x64 (build 22621)
+#>  system   x86_64, mingw32
+#>  ui       RTerm
+#>  language (EN)
+#>  collate  English_United States.utf8
+#>  ctype    English_United States.utf8
+#>  tz       Asia/Seoul
+#>  date     2022-12-30
+#>  pandoc   2.19.2 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> Matrix products: default
+#> ─ Packages ───────────────────────────────────────────────────────────────────
+#>  package     * version    date (UTC) lib source
+#>  cli           3.5.0      2022-12-20 [2] CRAN (R 4.2.2)
+#>  digest        0.6.31     2022-12-11 [2] CRAN (R 4.2.2)
+#>  evaluate      0.19       2022-12-13 [2] CRAN (R 4.2.2)
+#>  fastmap       1.1.0      2021-01-25 [2] CRAN (R 4.2.2)
+#>  gambms      * 0.0.0.9000 2022-12-29 [1] local
+#>  glue          1.6.2      2022-02-24 [2] CRAN (R 4.2.2)
+#>  highr         0.10       2022-12-22 [2] CRAN (R 4.2.2)
+#>  htmltools     0.5.4      2022-12-07 [2] CRAN (R 4.2.2)
+#>  knitr         1.41       2022-11-18 [2] CRAN (R 4.2.2)
+#>  lifecycle     1.0.3      2022-10-07 [2] CRAN (R 4.2.2)
+#>  magrittr      2.0.3      2022-03-30 [2] CRAN (R 4.2.2)
+#>  Rcpp          1.0.9      2022-07-08 [2] CRAN (R 4.2.2)
+#>  rlang         1.0.6      2022-09-24 [2] CRAN (R 4.2.2)
+#>  rmarkdown     2.19       2022-12-15 [2] CRAN (R 4.2.2)
+#>  rstudioapi    0.14       2022-08-22 [2] CRAN (R 4.2.2)
+#>  sessioninfo   1.2.2      2021-12-06 [2] CRAN (R 4.2.2)
+#>  stringi       1.7.8      2022-07-11 [2] CRAN (R 4.2.1)
+#>  stringr       1.5.0      2022-12-02 [2] CRAN (R 4.2.2)
+#>  vctrs         0.5.1      2022-11-16 [2] CRAN (R 4.2.2)
+#>  xfun          0.36       2022-12-21 [2] CRAN (R 4.2.2)
+#>  yaml          2.3.6      2022-10-18 [2] CRAN (R 4.2.2)
 #> 
-#> locale:
-#> [1] LC_COLLATE=English_United States.utf8 
-#> [2] LC_CTYPE=English_United States.utf8   
-#> [3] LC_MONETARY=English_United States.utf8
-#> [4] LC_NUMERIC=C                          
-#> [5] LC_TIME=English_United States.utf8    
+#>  [1] C:/Users/USER/AppData/Local/Temp/RtmpwLT6F4/temp_libpath22a013ff56a4
+#>  [2] C:/Users/USER/AppData/Local/R/win-library/4.2
+#>  [3] C:/Program Files/R/R-4.2.2/library
 #> 
-#> attached base packages:
-#> [1] stats     graphics  grDevices utils     datasets  methods   base     
-#> 
-#> other attached packages:
-#> [1] gambms_0.0.0.9000
-#> 
-#> loaded via a namespace (and not attached):
-#>  [1] Rcpp_1.0.9      digest_0.6.31   lifecycle_1.0.3 magrittr_2.0.3 
-#>  [5] evaluate_0.19   highr_0.10      rlang_1.0.6     stringi_1.7.8  
-#>  [9] cli_3.5.0       rstudioapi_0.14 vctrs_0.5.1     rmarkdown_2.19 
-#> [13] tools_4.2.2     stringr_1.5.0   glue_1.6.2      xfun_0.36      
-#> [17] yaml_2.3.6      fastmap_1.1.0   compiler_4.2.2  htmltools_0.5.4
-#> [21] knitr_1.41
+#> ──────────────────────────────────────────────────────────────────────────────
+```
+
+``` r
+system('gcc -v')
+#> [1] 0
 ```
 
 <!-- What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so: -->

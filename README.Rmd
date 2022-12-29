@@ -154,7 +154,10 @@ lines(u, dtCCH(u, a, b, z, s, nu, theta), col="#008631", lwd=2, lty=2)
 
 FYI, I built the package and conducted the simulations under the following environment:
 ```{r}
-sessionInfo()
+sessioninfo::session_info()
+```
+```{r}
+system('gcc -v')
 ```
 
 
