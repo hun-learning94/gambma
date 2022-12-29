@@ -263,7 +263,7 @@ sessioninfo::session_info()
 #>  xfun          0.36       2022-12-21 [2] CRAN (R 4.2.2)
 #>  yaml          2.3.6      2022-10-18 [2] CRAN (R 4.2.2)
 #> 
-#>  [1] C:/Users/USER/AppData/Local/Temp/RtmpwLT6F4/temp_libpath22a013ff56a4
+#>  [1] C:/Users/USER/AppData/Local/Temp/RtmpwLT6F4/temp_libpath22a066f948c3
 #>  [2] C:/Users/USER/AppData/Local/R/win-library/4.2
 #>  [3] C:/Program Files/R/R-4.2.2/library
 #> 
@@ -271,8 +271,8 @@ sessioninfo::session_info()
 ```
 
 ``` r
-system('gcc -v')
-#> [1] 0
+system("gcc -v", intern = TRUE)
+#> character(0)
 ```
 
 <!-- What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so: -->
