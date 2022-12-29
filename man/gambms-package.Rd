@@ -4,12 +4,12 @@
 \name{gambms-package}
 \alias{gambms-package}
 \alias{_PACKAGE}
-\title{gambms: What the Package Does (One Line, Title Case)}
+\title{gambms: Model Selection-based Estimation for Generalized Additive Models with Mixtures of g-priors}
 \description{
-What the package does (one paragraph).
+This package provides RCpp implementations of estimation methods for generalized additive models based on Bayesian model selection with mixtures of g-priors.
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Gyeonghun Kang \email{hunlearning@yonsei.ac.kr}
 
 }
 \keyword{internal}
