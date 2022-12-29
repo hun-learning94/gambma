@@ -203,6 +203,64 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// log1F1_cpp
+double log1F1_cpp(const double& aa, const double& rr, const double& xx);
+RcppExport SEXP _gambms_log1F1_cpp(SEXP aaSEXP, SEXP rrSEXP, SEXP xxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double& >::type aa(aaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type rr(rrSEXP);
+    Rcpp::traits::input_parameter< const double& >::type xx(xxSEXP);
+    rcpp_result_gen = Rcpp::wrap(log1F1_cpp(aa, rr, xx));
+    return rcpp_result_gen;
+END_RCPP
+}
+// log2F1_cpp
+double log2F1_cpp(const double& bb, const double& aa, const double& rr, const double& xx);
+RcppExport SEXP _gambms_log2F1_cpp(SEXP bbSEXP, SEXP aaSEXP, SEXP rrSEXP, SEXP xxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double& >::type bb(bbSEXP);
+    Rcpp::traits::input_parameter< const double& >::type aa(aaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type rr(rrSEXP);
+    Rcpp::traits::input_parameter< const double& >::type xx(xxSEXP);
+    rcpp_result_gen = Rcpp::wrap(log2F1_cpp(bb, aa, rr, xx));
+    return rcpp_result_gen;
+END_RCPP
+}
+// logPhi1_cpp
+double logPhi1_cpp(const double& aa, const double& bb, const double& rr, const double& xx, const double& yy);
+RcppExport SEXP _gambms_logPhi1_cpp(SEXP aaSEXP, SEXP bbSEXP, SEXP rrSEXP, SEXP xxSEXP, SEXP yySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double& >::type aa(aaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type bb(bbSEXP);
+    Rcpp::traits::input_parameter< const double& >::type rr(rrSEXP);
+    Rcpp::traits::input_parameter< const double& >::type xx(xxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type yy(yySEXP);
+    rcpp_result_gen = Rcpp::wrap(logPhi1_cpp(aa, bb, rr, xx, yy));
+    return rcpp_result_gen;
+END_RCPP
+}
+// logF1_cpp
+double logF1_cpp(const double& aa, const double& bb, const double& bbp, const double& rr, const double& xx, const double& yy);
+RcppExport SEXP _gambms_logF1_cpp(SEXP aaSEXP, SEXP bbSEXP, SEXP bbpSEXP, SEXP rrSEXP, SEXP xxSEXP, SEXP yySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double& >::type aa(aaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type bb(bbSEXP);
+    Rcpp::traits::input_parameter< const double& >::type bbp(bbpSEXP);
+    Rcpp::traits::input_parameter< const double& >::type rr(rrSEXP);
+    Rcpp::traits::input_parameter< const double& >::type xx(xxSEXP);
+    Rcpp::traits::input_parameter< const double& >::type yy(yySEXP);
+    rcpp_result_gen = Rcpp::wrap(logF1_cpp(aa, bb, bbp, rr, xx, yy));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_gambms_CRAD_cpp", (DL_FUNC) &_gambms_CRAD_cpp, 6},
@@ -214,6 +272,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_gambms_rGH_cpp", (DL_FUNC) &_gambms_rGH_cpp, 6},
     {"_gambms_rtCCH_cpp", (DL_FUNC) &_gambms_rtCCH_cpp, 8},
     {"_gambms_rAPL_cpp", (DL_FUNC) &_gambms_rAPL_cpp, 8},
+    {"_gambms_log1F1_cpp", (DL_FUNC) &_gambms_log1F1_cpp, 3},
+    {"_gambms_log2F1_cpp", (DL_FUNC) &_gambms_log2F1_cpp, 4},
+    {"_gambms_logPhi1_cpp", (DL_FUNC) &_gambms_logPhi1_cpp, 5},
+    {"_gambms_logF1_cpp", (DL_FUNC) &_gambms_logF1_cpp, 6},
     {NULL, NULL, 0}
 };
 

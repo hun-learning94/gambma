@@ -29,6 +29,12 @@ You can install the development version of gambms from [GitHub](https://github.c
 devtools::install_github("hun-learning94/gambms")
 ```
 
+You need to install the latest version of [Rtools](https://cran.r-project.org/bin/windows/Rtools/) compatible with your [R](https://cran.r-project.org/bin/windows/). For Windows users, depending on your version of gcc compiler, you may encounter the following error:
+```{r, echo=F}
+cat(paste0("error: 'mutex' in namespace 'std' does not name a type"))
+```
+If so, I would recommend installing a version of gcc compiler supporting `posix` threads and `seh` exception handling, e.g., [`x86_64-posix-seh`](https://sourceforge.net/projects/mingw-w64/files/) for Windows 10 or 11 64bit OS. Click [here](https://stackoverflow.com/questions/17242516/mingw-w64-threads-posix-vs-win32) and [here](http://jaryl-lan.blogspot.com/2020/09/how-to-solve-mutex-in-namespace-std.html) for more details.
+
 ## Examples
 
 We illustrate the use case of `gambms` for a simulated dataset and a real data. For more details, please see the paper in `docs` folder.
@@ -132,6 +138,21 @@ plotnumknot(fit_Pima)
 ```{r, fig.height=4, echo=F}
 plotresiduals(fit_Pima)
 ```
+
+## Bonus: sampling from tCCH distribution
+The truncated Compound Confluent Hypergeometric (tCCH) distribution is a variant of generalized beta distribution tuned with a total of $5$ parameters. We provide a straightforward sampling algorithm based on slice sampling, essentially Gibbs, for this and other variants including Gaussian Hypergeometric, Confluent Hypergeometric, and Appell Hypergeometric distribution. Read the paper in `docs` for more details.
+```{r}
+a=12; b=0.4; z=25; s=-10; nu = 1.1; theta = 0.14
+u = seq(0, 1/nu, len=1e4)
+samp = rtCCH(1e6, a, b, z, s, nu, theta)
+hist(samp, nclass=100, probability = T,
+     xlab= "u", ylab = "Density", col="#00c04b", border="white",
+     main = paste0("tCCH(", a,", ", b,", ", z,", ", s,", ", nu,", ", theta, ")"))
+lines(u, dtCCH(u, a, b, z, s, nu, theta), col="#008631", lwd=2, lty=2)
+```
+
+
+
 
 <!-- What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so: -->
 

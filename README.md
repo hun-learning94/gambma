@@ -20,6 +20,23 @@ You can install the development version of gambms from
 devtools::install_github("hun-learning94/gambms")
 ```
 
+You need to install the latest version of
+[Rtools](https://cran.r-project.org/bin/windows/Rtools/) compatible with
+your [R](https://cran.r-project.org/bin/windows/). For Windows users,
+depending on your version of gcc compiler, you may encounter the
+following error:
+
+    #> error: 'mutex' in namespace 'std' does not name a type
+
+If so, I would recommend installing a version of gcc compiler supporting
+`posix` threads and `seh` exception handling, e.g.,
+[`x86_64-posix-seh`](https://sourceforge.net/projects/mingw-w64/files/)
+for Windows 10 or 11 64bit OS. Click
+[here](https://stackoverflow.com/questions/17242516/mingw-w64-threads-posix-vs-win32)
+and
+[here](http://jaryl-lan.blogspot.com/2020/09/how-to-solve-mutex-in-namespace-std.html)
+for more details.
+
 ## Examples
 
 We illustrate the use case of `gambms` for a simulated dataset and a
@@ -50,7 +67,7 @@ fit_sim = tryCatch(
 plot(fit_sim)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ### Real data 1) Boston Housing Prices (Gaussian, VS-knot)
 
@@ -121,8 +138,8 @@ plotresiduals(fit)
     #> sig 0.1419 0.1417 0.0049  0.1326  0.1521
     #> -------------------------------------------------------------
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-5-2.png" width="100%" />
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-6-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ### Real data 2) Pima Indian Diabetes (Bernoulli, EVEN-knot)
 
@@ -180,8 +197,29 @@ plotresiduals(fit)
     #> g 1715.3347 1405.5127 1092.6665  598.5150 4607.4314
     #> -------------------------------------------------------------
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-8-2.png" width="100%" />
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+
+## Bonus: sampling from tCCH distribution
+
+The truncated Compound Confluent Hypergeometric (tCCH) distribution is a
+variant of generalized beta distribution tuned with a total of $5$
+parameters. We provide a straightforward sampling algorithm based on
+slice sampling, essentially Gibbs, for this and other variants including
+Gaussian Hypergeometric, Confluent Hypergeometric, and Appell
+Hypergeometric distribution. Read the paper in `docs` for more details.
+
+``` r
+a=12; b=0.4; z=25; s=-10; nu = 1.1; theta = 0.14
+u = seq(0, 1/nu, len=1e4)
+samp = rtCCH(1e6, a, b, z, s, nu, theta)
+hist(samp, nclass=100, probability = T,
+     xlab= "u", ylab = "Density", col="#00c04b", border="white",
+     main = paste0("tCCH(", a,", ", b,", ", z,", ", s,", ", nu,", ", theta, ")"))
+lines(u, dtCCH(u, a, b, z, s, nu, theta), col="#008631", lwd=2, lty=2)
+```
+
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
 <!-- What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so: -->
 <!-- ```{r cars} -->

@@ -37,3 +37,19 @@
     .Call(`_gambms_rAPL_cpp`, nsamp, burnin, aa, bb, zz, ww, xx, yy)
 }
 
+.log1F1 <- function(aa, rr, xx) {
+    .Call(`_gambms_log1F1_cpp`, aa, rr, xx)
+}
+
+.log2F1 <- function(bb, aa, rr, xx) {
+    .Call(`_gambms_log2F1_cpp`, bb, aa, rr, xx)
+}
+
+.logPhi1 <- function(aa, bb, rr, xx, yy) {
+    .Call(`_gambms_logPhi1_cpp`, aa, bb, rr, xx, yy)
+}
+
+.F1 <- function(aa, bb, bbp, rr, xx, yy) {
+    .Call(`_gambms_logF1_cpp`, aa, bb, bbp, rr, xx, yy)
+}
+

@@ -4,3 +4,4 @@
 ^docs$
 ^test$
 ^README\.Rmd$
+^README_cache$
