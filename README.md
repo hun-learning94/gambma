@@ -210,7 +210,7 @@ Gaussian Hypergeometric, Confluent Hypergeometric, and Appell
 Hypergeometric distribution. Read the paper in `docs` for more details.
 
 ``` r
-a=12; b=0.4; z=25; s=-10; nu = 1.1; theta = 0.14
+a=5; b=1.2; z=37; s=-26; nu = 1; theta = 0.36
 u = seq(0, 1/nu, len=1e4)
 samp = rtCCH(1e6, a, b, z, s, nu, theta)
 hist(samp, nclass=100, probability = T,
@@ -238,7 +238,7 @@ sessioninfo::session_info()
 #>  collate  English_United States.utf8
 #>  ctype    English_United States.utf8
 #>  tz       Asia/Seoul
-#>  date     2022-12-30
+#>  date     2023-01-12
 #>  pandoc   2.19.2 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
@@ -247,7 +247,7 @@ sessioninfo::session_info()
 #>  digest        0.6.31     2022-12-11 [2] CRAN (R 4.2.2)
 #>  evaluate      0.19       2022-12-13 [2] CRAN (R 4.2.2)
 #>  fastmap       1.1.0      2021-01-25 [2] CRAN (R 4.2.2)
-#>  gambms      * 0.0.0.9000 2022-12-29 [1] local
+#>  gambms      * 0.0.0.9000 2023-01-12 [1] local
 #>  glue          1.6.2      2022-02-24 [2] CRAN (R 4.2.2)
 #>  highr         0.10       2022-12-22 [2] CRAN (R 4.2.2)
 #>  htmltools     0.5.4      2022-12-07 [2] CRAN (R 4.2.2)
@@ -265,7 +265,7 @@ sessioninfo::session_info()
 #>  xfun          0.36       2022-12-21 [2] CRAN (R 4.2.2)
 #>  yaml          2.3.6      2022-10-18 [2] CRAN (R 4.2.2)
 #> 
-#>  [1] C:/Users/USER/AppData/Local/Temp/RtmpwLT6F4/temp_libpath22a066392430
+#>  [1] C:/Users/USER/AppData/Local/Temp/RtmpAJisLh/temp_libpath4694639b5885
 #>  [2] C:/Users/USER/AppData/Local/R/win-library/4.2
 #>  [3] C:/Program Files/R/R-4.2.2/library
 #> 
