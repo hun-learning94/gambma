@@ -454,6 +454,7 @@ print.gambms = function(x, ...){
 #' @examples
 summary.gambms = function(object, ...){
   x = object
+  cat("")
   if(is.null(dim(x$X))) x$X = matrix(x$X, ncol = 1)
   if(is.null(dim(x$linears))) x$linears = matrix(x$linears, ncol = 1)
   mean_post = colMeans(x$linears)
