@@ -1,9 +1,9 @@
-#ifndef __gambmsVS__
-#define __gambmsVS__
+#ifndef __gambmsVS2__
+#define __gambmsVS2__
 #include <RcppArmadillo.h>
 
-//[[Rcpp::export(.gambmsVS)]]
-Rcpp::List gambmsVS(const arma::vec &y,
+//[[Rcpp::export(.gambmsVS2)]]
+Rcpp::List gambmsVS2(const arma::vec &y,
                     const double &glmWeight,
                     const arma::mat &X,
                     const arma::mat &X_pr,
@@ -24,4 +24,4 @@ Rcpp::List gambmsVS(const arma::vec &y,
                     const bool& storeFit,
                     unsigned printiter);
 
-#endif // __gambmsVS__
+#endif // __gambmsVS2__

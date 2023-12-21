@@ -20,11 +20,9 @@ mf = y~ncs(x1, nk=maxk)+ ncs(x2, nk = maxk)  + ncs(x3, nk = maxk)
 fit_sim = tryCatch(
   gambms(mf, dat,
          knotConfig = "FREE",
-         prior = "Robust",
+         prior = "Intrinsic",
          family = "poisson",
-         printIter=500,
-         freeCtrl=list(mcmcIter = 2000, thin = maxk),
-         storeFitted = T),
+         printIter = 500),
   error = function(cnd)cnd
 )
 
@@ -33,7 +31,6 @@ plot(fit_sim)
 plotnumknot(fit_sim)
 plotresiduals(fit_sim)
 
-pdf("test/fit_sim_plot.pdf", width = 9, height=3)
-plot(fit_sim)
-dev.off()
+save(fit_sim, file = "test\\fit_sim.rdata")
+
 

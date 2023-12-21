@@ -106,6 +106,40 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gambmsFREE2
+Rcpp::List gambmsFREE2(const arma::vec& y, const double& glmWeight, const arma::mat& X, const arma::mat& X_pr, const arma::mat& XLin, const arma::vec& offset, const arma::uvec& maxk, const arma::vec& Lambda, const unsigned& familyLink, const unsigned& gprior, const double& aa, const double& bb, const double& ss, const double& gg, const int& initS, const int& MCMCiter, const int& thin, double bir_p, double dea_p, double nu, const Rcpp::Function& Rglm, const Rcpp::Function& nearPDres, const bool& storeFit, unsigned printiter);
+RcppExport SEXP _gambms_gambmsFREE2(SEXP ySEXP, SEXP glmWeightSEXP, SEXP XSEXP, SEXP X_prSEXP, SEXP XLinSEXP, SEXP offsetSEXP, SEXP maxkSEXP, SEXP LambdaSEXP, SEXP familyLinkSEXP, SEXP gpriorSEXP, SEXP aaSEXP, SEXP bbSEXP, SEXP ssSEXP, SEXP ggSEXP, SEXP initSSEXP, SEXP MCMCiterSEXP, SEXP thinSEXP, SEXP bir_pSEXP, SEXP dea_pSEXP, SEXP nuSEXP, SEXP RglmSEXP, SEXP nearPDresSEXP, SEXP storeFitSEXP, SEXP printiterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const double& >::type glmWeight(glmWeightSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X_pr(X_prSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type XLin(XLinSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type offset(offsetSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type maxk(maxkSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Lambda(LambdaSEXP);
+    Rcpp::traits::input_parameter< const unsigned& >::type familyLink(familyLinkSEXP);
+    Rcpp::traits::input_parameter< const unsigned& >::type gprior(gpriorSEXP);
+    Rcpp::traits::input_parameter< const double& >::type aa(aaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type bb(bbSEXP);
+    Rcpp::traits::input_parameter< const double& >::type ss(ssSEXP);
+    Rcpp::traits::input_parameter< const double& >::type gg(ggSEXP);
+    Rcpp::traits::input_parameter< const int& >::type initS(initSSEXP);
+    Rcpp::traits::input_parameter< const int& >::type MCMCiter(MCMCiterSEXP);
+    Rcpp::traits::input_parameter< const int& >::type thin(thinSEXP);
+    Rcpp::traits::input_parameter< double >::type bir_p(bir_pSEXP);
+    Rcpp::traits::input_parameter< double >::type dea_p(dea_pSEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Function& >::type Rglm(RglmSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Function& >::type nearPDres(nearPDresSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type storeFit(storeFitSEXP);
+    Rcpp::traits::input_parameter< unsigned >::type printiter(printiterSEXP);
+    rcpp_result_gen = Rcpp::wrap(gambmsFREE2(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, initS, MCMCiter, thin, bir_p, dea_p, nu, Rglm, nearPDres, storeFit, printiter));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gambmsVS
 Rcpp::List gambmsVS(const arma::vec& y, const double& glmWeight, const arma::mat& X, const arma::mat& X_pr, const arma::mat& XLin, const arma::vec& offset, const arma::uvec& maxk, const arma::vec& Lambda, const unsigned& familyLink, const unsigned& gprior, const double& aa, const double& bb, const double& ss, const double& gg, const unsigned& MCMCiter, const Rcpp::Function& Rglm, const Rcpp::Function& nearPDres, bool getmeMAP, const bool& storeFit, unsigned printiter);
 RcppExport SEXP _gambms_gambmsVS(SEXP ySEXP, SEXP glmWeightSEXP, SEXP XSEXP, SEXP X_prSEXP, SEXP XLinSEXP, SEXP offsetSEXP, SEXP maxkSEXP, SEXP LambdaSEXP, SEXP familyLinkSEXP, SEXP gpriorSEXP, SEXP aaSEXP, SEXP bbSEXP, SEXP ssSEXP, SEXP ggSEXP, SEXP MCMCiterSEXP, SEXP RglmSEXP, SEXP nearPDresSEXP, SEXP getmeMAPSEXP, SEXP storeFitSEXP, SEXP printiterSEXP) {
@@ -133,6 +167,36 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool& >::type storeFit(storeFitSEXP);
     Rcpp::traits::input_parameter< unsigned >::type printiter(printiterSEXP);
     rcpp_result_gen = Rcpp::wrap(gambmsVS(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, printiter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gambmsVS2
+Rcpp::List gambmsVS2(const arma::vec& y, const double& glmWeight, const arma::mat& X, const arma::mat& X_pr, const arma::mat& XLin, const arma::vec& offset, const arma::uvec& maxk, const arma::vec& Lambda, const unsigned& familyLink, const unsigned& gprior, const double& aa, const double& bb, const double& ss, const double& gg, const unsigned& MCMCiter, const Rcpp::Function& Rglm, const Rcpp::Function& nearPDres, bool getmeMAP, const bool& storeFit, unsigned printiter);
+RcppExport SEXP _gambms_gambmsVS2(SEXP ySEXP, SEXP glmWeightSEXP, SEXP XSEXP, SEXP X_prSEXP, SEXP XLinSEXP, SEXP offsetSEXP, SEXP maxkSEXP, SEXP LambdaSEXP, SEXP familyLinkSEXP, SEXP gpriorSEXP, SEXP aaSEXP, SEXP bbSEXP, SEXP ssSEXP, SEXP ggSEXP, SEXP MCMCiterSEXP, SEXP RglmSEXP, SEXP nearPDresSEXP, SEXP getmeMAPSEXP, SEXP storeFitSEXP, SEXP printiterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const double& >::type glmWeight(glmWeightSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X_pr(X_prSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type XLin(XLinSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type offset(offsetSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type maxk(maxkSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Lambda(LambdaSEXP);
+    Rcpp::traits::input_parameter< const unsigned& >::type familyLink(familyLinkSEXP);
+    Rcpp::traits::input_parameter< const unsigned& >::type gprior(gpriorSEXP);
+    Rcpp::traits::input_parameter< const double& >::type aa(aaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type bb(bbSEXP);
+    Rcpp::traits::input_parameter< const double& >::type ss(ssSEXP);
+    Rcpp::traits::input_parameter< const double& >::type gg(ggSEXP);
+    Rcpp::traits::input_parameter< const unsigned& >::type MCMCiter(MCMCiterSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Function& >::type Rglm(RglmSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Function& >::type nearPDres(nearPDresSEXP);
+    Rcpp::traits::input_parameter< bool >::type getmeMAP(getmeMAPSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type storeFit(storeFitSEXP);
+    Rcpp::traits::input_parameter< unsigned >::type printiter(printiterSEXP);
+    rcpp_result_gen = Rcpp::wrap(gambmsVS2(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, printiter));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -267,7 +331,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_gambms_CRAD_test_cpp", (DL_FUNC) &_gambms_CRAD_test_cpp, 3},
     {"_gambms_gambmsEVEN", (DL_FUNC) &_gambms_gambmsEVEN, 22},
     {"_gambms_gambmsFREE", (DL_FUNC) &_gambms_gambmsFREE, 24},
+    {"_gambms_gambmsFREE2", (DL_FUNC) &_gambms_gambmsFREE2, 24},
     {"_gambms_gambmsVS", (DL_FUNC) &_gambms_gambmsVS, 20},
+    {"_gambms_gambmsVS2", (DL_FUNC) &_gambms_gambmsVS2, 20},
     {"_gambms_rCH_cpp", (DL_FUNC) &_gambms_rCH_cpp, 5},
     {"_gambms_rGH_cpp", (DL_FUNC) &_gambms_rGH_cpp, 6},
     {"_gambms_rtCCH_cpp", (DL_FUNC) &_gambms_rtCCH_cpp, 8},

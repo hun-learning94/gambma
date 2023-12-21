@@ -58,10 +58,9 @@ mf = y~ncs(x1, nk=maxk)+ ncs(x2, nk = maxk)  + ncs(x3, nk = maxk)
 fit_sim = tryCatch(
   gambms(mf, dat,
          knotConfig = "FREE",
-         prior = "Robust",
+         prior = "Intrinsic",
          family = "poisson",
-         printIter=500,
-         freeCtrl=list(mcmcIter = 4000, thin = maxk)),
+         printIter = 500),
   error = function(cnd)cnd
 )
 plot(fit_sim)
@@ -69,11 +68,11 @@ plot(fit_sim)
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
-### Real data 1) Boston Housing Prices (Gaussian, VS-knot)
+### Real data 1) Boston Housing Prices (Gaussian, EVEN-knot)
 
 ``` r
 data("Boston")
-maxk=15; lambda = 1
+maxk=15; lambda = .1
 mf = log(medv) ~ chas +
   ncs(crim, nk = maxk, lambda=lambda) +
   ncs(zn, nk = maxk, lambda=lambda) +
@@ -88,8 +87,8 @@ mf = log(medv) ~ chas +
   ncs(black, nk = maxk, lambda=lambda) +
   ncs(lstat, nk = maxk, lambda=lambda)
 fit =  gambms(mf, Boston,
-                 knotConfig = "VS",
-                 prior = "Robust",
+                 knotConfig = "EVEN",
+                 prior = "Intrinsic",
                  family = "gaussian")
 summary(fit)
 plot(fit)
@@ -109,56 +108,56 @@ plotresiduals(fit)
     #> 
     #> Family:                                           gaussian 
     #> Link function:                                    identity 
-    #> g-prior:                                          Robust 
+    #> g-prior:                                          Intrinsic 
     #> ------------------------------------------------------------ 
     #> Sample size:                                      506 
     #> Number of smooth covariates:                      12 
     #> Number of linear terms (including intercept):     2 
-    #> Knot configuration:                               VS 
-    #> Maximum number of knots:                          15 15 15 15 15 15 15 8 15 15 15 15 
-    #> Prior mean on number of knots:                    1 1 1 1 1 1 1 1 1 1 1 1 
+    #> Knot configuration:                               EVEN 
+    #> Maximum number of knots:                          15 15 15 15 15 15 15 15 15 15 15 15 
+    #> Prior mean on number of knots:                    0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 
     #> ------------------------------------------------------------- 
     #> Marginal probability that sm is linear: 
     #>    crim      zn   indus     nox      rm     age     dis     rad     tax ptratio 
-    #>  0.0015  0.8600  0.8000  0.0000  0.0000  0.9000  0.0000  0.7800  0.6100  0.7300 
+    #>  0.0048  0.8600  0.2300  0.0040  0.0000  0.8500  0.0140  0.5500  0.2400  0.7900 
     #>   black   lstat 
-    #>  0.7400  0.1500 
+    #>  0.5600  0.1400 
     #> ------------------------------------------------------------- 
     #> Linear coefficients:
     #>                 mean   median       sd  z_score  lower95  upper95
-    #> (Intercept)   3.0363   3.0362   0.0065 464.3725   3.0234   3.0493
-    #> chas          0.0301   0.0295   0.0286   1.0521  -0.0260   0.0860
+    #> (Intercept)   3.0365   3.0363   0.0064 472.5580   3.0244   3.0491
+    #> chas          0.0299   0.0302   0.0288   1.0406  -0.0260   0.0866
     #> ------------------------------------------------------------ 
     #> Sampled g values:
     #>       mean   median       sd  lower95  upper95
-    #> g 334.3914 297.4666 155.6324 154.4896 756.6889
+    #> g  85.0739  82.5075  21.1571  53.4013 136.3808
     #> ------------------------------------------------------------- 
     #> Sampled sigma values:
     #>       mean median     sd lower95 upper95
-    #> sig 0.1419 0.1417 0.0049  0.1326  0.1521
+    #> sig 0.1430 0.1428 0.0050  0.1338  0.1532
     #> -------------------------------------------------------------
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-6-2.png" width="100%" />
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
-### Real data 2) Pima Indian Diabetes (Bernoulli, EVEN-knot)
+### Real data 2) Pima Indian Diabetes (Bernoulli, VS-knot)
 
 ``` r
 data("Pima")
-maxk=15; lambda = 1
-mf = diabetes ~
+maxk=10; lambda = .1
+mf = diabetes ~ 
   ncs(pregnant, nk = maxk, lambda = lambda) +
   ncs(glucose, nk = maxk, lambda = lambda) +
   ncs(pressure, nk = maxk, lambda = lambda) +
-  ncs(triceps, nk = maxk, lambda = lambda) +
+  ncs(triceps, nk = 5, lambda = lambda) +
   ncs(mass, nk = maxk, lambda = lambda) +
   ncs(pedigree, nk = maxk, lambda = lambda) +
-  ncs(age, nk = maxk, lambda = lambda)
+  ncs(age, nk = 5, lambda = lambda)
 fit =  gambms(mf, Pima,
-              knotConfig = "EVEN",
-              prior = "Robust",
-              family = "bernoulli",
-              printIter = 500)
+         knotConfig = "VS",
+         prior = "Intrinsic",
+         family = "bernoulli",
+         Ctrl = list(mcmcIter = 5000))
 
 summary(fit)
 plot(fit)
@@ -169,32 +168,32 @@ plotresiduals(fit)
     #> fm: 
     #> diabetes ~ ncs(pregnant, nk = maxk, lambda = lambda) + ncs(glucose, 
     #>     nk = maxk, lambda = lambda) + ncs(pressure, nk = maxk, lambda = lambda) + 
-    #>     ncs(triceps, nk = maxk, lambda = lambda) + ncs(mass, nk = maxk, 
+    #>     ncs(triceps, nk = 5, lambda = lambda) + ncs(mass, nk = maxk, 
     #>     lambda = lambda) + ncs(pedigree, nk = maxk, lambda = lambda) + 
-    #>     ncs(age, nk = maxk, lambda = lambda)
+    #>     ncs(age, nk = 5, lambda = lambda)
     #> 
     #> Family:                                           binomial 
     #> Link function:                                    logit 
-    #> g-prior:                                          Robust 
+    #> g-prior:                                          Intrinsic 
     #> ------------------------------------------------------------ 
     #> Sample size:                                      532 
     #> Number of smooth covariates:                      7 
     #> Number of linear terms (including intercept):     1 
-    #> Knot configuration:                               EVEN 
-    #> Maximum number of knots:                          15 15 15 15 15 15 15 
-    #> Prior mean on number of knots:                    1 1 1 1 1 1 1 
+    #> Knot configuration:                               VS 
+    #> Maximum number of knots:                          10 10 10 5 10 10 5 
+    #> Prior mean on number of knots:                    0.1 0.1 0.1 0.1 0.1 0.1 0.1 
     #> ------------------------------------------------------------- 
     #> Marginal probability that sm is linear: 
     #> pregnant  glucose pressure  triceps     mass pedigree      age 
-    #>   0.2100   0.7300   0.7200   0.6900   0.0430   0.6800   0.0075 
+    #>   0.3600   0.7700   0.8100   0.7600   0.1300   0.4900   0.0034 
     #> ------------------------------------------------------------- 
     #> Linear coefficients:
     #>                mean  median      sd z_score lower95 upper95
-    #> (Intercept) -1.1698 -1.1719  0.1235 -9.4689 -1.4064 -0.9265
+    #> (Intercept) -1.1496 -1.1474  0.1490 -7.7176 -1.4442 -0.8639
     #> ------------------------------------------------------------ 
     #> Sampled g values:
-    #>        mean    median        sd   lower95   upper95
-    #> g 1715.3347 1405.5127 1092.6665  598.5150 4607.4314
+    #>      mean  median      sd lower95 upper95
+    #> g 46.0073 44.3461 11.5661 29.7896 73.8009
     #> -------------------------------------------------------------
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
@@ -228,48 +227,44 @@ environment:
 
 ``` r
 sessioninfo::session_info()
-#> ─ Session info ───────────────────────────────────────────────────────────────
+#> - Session info ---------------------------------------------------------------
 #>  setting  value
-#>  version  R version 4.2.2 (2022-10-31 ucrt)
-#>  os       Windows 10 x64 (build 22621)
+#>  version  R version 4.1.2 (2021-11-01)
+#>  os       Windows 10 x64 (build 19045)
 #>  system   x86_64, mingw32
 #>  ui       RTerm
 #>  language (EN)
-#>  collate  English_United States.utf8
-#>  ctype    English_United States.utf8
+#>  collate  English_United States.1252
+#>  ctype    English_United States.1252
 #>  tz       Asia/Seoul
-#>  date     2023-01-12
+#>  date     2023-12-22
 #>  pandoc   2.19.2 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
+#> - Packages -------------------------------------------------------------------
 #>  package     * version    date (UTC) lib source
-#>  cli           3.5.0      2022-12-20 [2] CRAN (R 4.2.2)
-#>  digest        0.6.31     2022-12-11 [2] CRAN (R 4.2.2)
-#>  evaluate      0.19       2022-12-13 [2] CRAN (R 4.2.2)
-#>  fastmap       1.1.0      2021-01-25 [2] CRAN (R 4.2.2)
-#>  gambms      * 0.0.0.9000 2023-01-12 [1] local
-#>  glue          1.6.2      2022-02-24 [2] CRAN (R 4.2.2)
-#>  highr         0.10       2022-12-22 [2] CRAN (R 4.2.2)
-#>  htmltools     0.5.4      2022-12-07 [2] CRAN (R 4.2.2)
-#>  knitr         1.41       2022-11-18 [2] CRAN (R 4.2.2)
-#>  lifecycle     1.0.3      2022-10-07 [2] CRAN (R 4.2.2)
-#>  magrittr      2.0.3      2022-03-30 [2] CRAN (R 4.2.2)
-#>  Rcpp          1.0.9      2022-07-08 [2] CRAN (R 4.2.2)
-#>  rlang         1.0.6      2022-09-24 [2] CRAN (R 4.2.2)
-#>  rmarkdown     2.19       2022-12-15 [2] CRAN (R 4.2.2)
-#>  rstudioapi    0.14       2022-08-22 [2] CRAN (R 4.2.2)
-#>  sessioninfo   1.2.2      2021-12-06 [2] CRAN (R 4.2.2)
-#>  stringi       1.7.8      2022-07-11 [2] CRAN (R 4.2.1)
-#>  stringr       1.5.0      2022-12-02 [2] CRAN (R 4.2.2)
-#>  vctrs         0.5.1      2022-11-16 [2] CRAN (R 4.2.2)
-#>  xfun          0.36       2022-12-21 [2] CRAN (R 4.2.2)
-#>  yaml          2.3.6      2022-10-18 [2] CRAN (R 4.2.2)
+#>  cli           3.6.1      2023-03-23 [1] CRAN (R 4.1.3)
+#>  digest        0.6.29     2021-12-01 [1] CRAN (R 4.1.2)
+#>  evaluate      0.15       2022-02-18 [1] CRAN (R 4.1.2)
+#>  fastmap       1.1.0      2021-01-25 [1] CRAN (R 4.1.2)
+#>  gambms      * 0.0.0.9000 2023-12-21 [1] local
+#>  highr         0.9        2021-04-16 [1] CRAN (R 4.1.2)
+#>  htmltools     0.5.5      2023-03-23 [1] CRAN (R 4.1.3)
+#>  knitr         1.37       2021-12-16 [1] CRAN (R 4.1.2)
+#>  magrittr      2.0.3      2022-03-30 [1] CRAN (R 4.1.3)
+#>  Rcpp          1.0.8.3    2022-03-17 [1] CRAN (R 4.1.3)
+#>  rlang         1.1.1      2023-04-28 [1] CRAN (R 4.1.2)
+#>  rmarkdown     2.11       2021-09-14 [1] CRAN (R 4.1.2)
+#>  rstudioapi    0.13       2020-11-12 [1] CRAN (R 4.1.2)
+#>  sessioninfo   1.2.2      2021-12-06 [1] CRAN (R 4.1.3)
+#>  stringi       1.7.6      2021-11-29 [1] CRAN (R 4.1.2)
+#>  stringr       1.4.0      2019-02-10 [1] CRAN (R 4.1.2)
+#>  xfun          0.39       2023-04-20 [1] CRAN (R 4.1.3)
+#>  yaml          2.3.5      2022-02-21 [1] CRAN (R 4.1.2)
 #> 
-#>  [1] C:/Users/USER/AppData/Local/Temp/RtmpAJisLh/temp_libpath4694281e16b2
-#>  [2] C:/Users/USER/AppData/Local/R/win-library/4.2
-#>  [3] C:/Program Files/R/R-4.2.2/library
+#>  [1] C:/Users/hunlearning/Documents/R/win-library/4.1
+#>  [2] C:/Program Files/R/R-4.1.2/library
 #> 
-#> ──────────────────────────────────────────────────────────────────────────────
+#> ------------------------------------------------------------------------------
 ```
 
 ``` r

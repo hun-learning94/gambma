@@ -5,9 +5,9 @@
 // [[Rcpp::plugins(cpp11)]]
 #include "gambmsSupportFunctions.h"
 #include "gambmsVS.h"
-#include "RJMCMC.h"
+#include "RJMCMC2.h"
 
-Rcpp::List gambmsFREE(const arma::vec &y,
+Rcpp::List gambmsFREE2(const arma::vec &y,
                       const double &glmWeight,
                       const arma::mat &X,
                       const arma::mat &X_pr,
@@ -67,39 +67,27 @@ Rcpp::List gambmsFREE(const arma::vec &y,
   BprCurr = Rcpp::as<arma::mat>(the_initial_knot["B_prMax"]);
   Rcpp::Rcout << "Initial sampling done, numknots is " << knotsCurr.n_elem - (PLin + P) << "\n";
 
-  // for(unsigned p{0}; p < P; p++){
-  //   if(arma::accu(knotsIdxCurr == (p+1)) == 0){
-  //     BtrBpr_update(0,
-  //                   X.col(p),
-  //                   X_pr.col(p),
-  //                   p,
-  //                   BtrCurr,
-  //                   BprCurr,
-  //                   knotsCurr,
-  //                   knotsIdxCurr,
-  //                   betaIdxCurr,
-  //                   0.5,
-  //                   0);
-  //   }
-  // }
+  for(unsigned p{0}; p < P; p++){
+    if(arma::accu(knotsIdxCurr == (p+1)) == 0){
+      BtrBpr_update2(0,
+                    p,
+                    BtrCurr,
+                    BprCurr,
+                    knotsCurr,
+                    knotsIdxCurr,
+                    betaIdxCurr,
+                    0.5,
+                    0,
+                    X, X_pr, XLin);
+    }
+  }
 
-  MATX_TO_LPY(lpyCurr,
-              comp1Curr,
-              comp2Curr,
-              comp3Curr,
-              r2QmCurr,
-              mleCurr,
-              EtaHatCurr,
-              rootJBetaHatCurr,
-              y,
-              glmWeight,
-              BtrCurr,
-              betaIdxCurr,
-              offset,
-              Lambda,
-              familyLink,
-              gprior,
-              aa, bb, ss, gg,
+  MATX_TO_LPY(lpyCurr, comp1Curr, comp2Curr, comp3Curr, r2QmCurr,
+              mleCurr, EtaHatCurr, rootJBetaHatCurr,
+              y, glmWeight,
+              BtrCurr, betaIdxCurr,
+              offset, Lambda,
+              familyLink, gprior, aa, bb, ss, gg,
               Rglm, false, maxk);
 
   // placeholders for each MCMCiter
@@ -146,7 +134,7 @@ Rcpp::List gambmsFREE(const arma::vec &y,
     tic = std::chrono::steady_clock::now(); ////// <- TIMER
     for(int ss{0}; ss < thin; ss++){
       for(unsigned p{0}; p < P; p++){
-        // try{
+        // try{f
         //   proposedLPY(static_cast<int>(totaliter)) = lpyProp;
         //   currentLPY(static_cast<int>(totaliter)) = lpyCurr;
         //   PropToCurr(static_cast<int>(totaliter)) = std::log(PtoC);
@@ -161,11 +149,10 @@ Rcpp::List gambmsFREE(const arma::vec &y,
 
         try{
           tic1 = std::chrono::steady_clock::now(); ////// <- TIMER
-          RJMCMC(PtoC, CtoP,
-                 nu, bir_p, dea_p,
-                 X.col(p), X_pr.col(p), p, maxk(p),
-                 BtrProp, BprProp,
-                 knotsProp, knotsIdxProp, betaIdxProp);
+          RJMCMC2(PtoC, CtoP,
+                 nu, bir_p, dea_p, p, maxk(p),
+                 BtrProp, BprProp, knotsProp, knotsIdxProp, betaIdxProp,
+                 X, X_pr, XLin);
           toc1 = std::chrono::steady_clock::now(); ////// <- TIMER
           TOTAL1 += toc1 - tic1;
           TOTAL1iter++;
@@ -179,7 +166,6 @@ Rcpp::List gambmsFREE(const arma::vec &y,
 
         try{
           tic2 = std::chrono::steady_clock::now(); ////// <- TIMER
-          // Rcpp::Rcout << BtrProp.row(0).t() << "\n";
           MATX_TO_LPY(lpyProp, comp1Prop, comp2Prop, comp3Prop, r2QmProp,
                       mleProp, EtaHatProp, rootJBetaHatProp,
                       y, glmWeight,
@@ -228,18 +214,11 @@ Rcpp::List gambmsFREE(const arma::vec &y,
           //   Rcpp::Rcout << "no knot selected \n";
           //   Rcpp::Rcout << knotsCurr.n_elem << " " << knotsProp.n_elem << "\n";
           // }
-          BtrCurr = BtrProp;
-          BprCurr = BprProp;
-          knotsCurr = knotsProp;
-          knotsIdxCurr = knotsIdxProp;
-          betaIdxCurr = betaIdxProp;
+          BtrCurr = BtrProp; BprCurr = BprProp;
+          knotsCurr = knotsProp; knotsIdxCurr = knotsIdxProp; betaIdxCurr = betaIdxProp;
           lpyCurr = lpyProp;
-          comp1Curr = comp1Prop;
-          comp2Curr = comp2Prop;
-          comp3Curr = comp3Prop;
-          r2QmCurr = r2QmProp;
-          mleCurr = mleProp;
-          rootJBetaHatCurr = rootJBetaHatProp;
+          comp1Curr = comp1Prop; comp2Curr = comp2Prop; comp3Curr = comp3Prop;
+          r2QmCurr = r2QmProp; mleCurr = mleProp; rootJBetaHatCurr = rootJBetaHatProp;
           ++num_of_acpt;
           // ACPTED(static_cast<int>(totaliter)) = true;
         } else { // if not accepted, do nothing
@@ -286,14 +265,14 @@ Rcpp::List gambmsFREE(const arma::vec &y,
     TOTALiter++;
 
     if(s % printiter == 0 && s > 0){
-      Rcpp::Rcout << "Finished " << s <<
-        "th iter, the most recent numknots is " << knotsCurr.n_elem - (PLin + P) <<
-          ", Accepted " << num_of_acpt  << " / " << totaliter  << ", MLE failed "<< num_failed << '\n';
+      Rcpp::Rcout << "Just finished " << s <<
+        "th model selection iterations, the most recent numknots is " << knotsCurr.n_elem - (PLin + P) <<
+          ", Accepted " << num_of_acpt  << " out of " << totaliter  << ", MLE failed "<< num_failed << '\n';
       Rcpp::Rcout << " - Avg time per single update " << std::chrono::duration<double>(TOTAL).count() / (TOTALiter) << "\n";
-      // Rcpp::Rcout << "  - Proposal (Rev. Jump) " << P* thin * std::chrono::duration<double>(TOTAL1).count() / TOTAL1iter << "\n";
-      // Rcpp::Rcout << "  - Density evaluation (MLE) " << P* thin * std::chrono::duration<double>(TOTAL2).count() / TOTAL2iter << "\n";
-      // Rcpp::Rcout << "  - The rest is squandered on the failed attempts to jump " << "\n";
-      // Rcpp::Rcout << " - Total num of atomic iterations " << (int) totaliter << "\n";
+      Rcpp::Rcout << "  - Proposal (Rev. Jump) " << P* thin * std::chrono::duration<double>(TOTAL1).count() / TOTAL1iter << "\n";
+      Rcpp::Rcout << "  - Density evaluation (MLE) " << P* thin * std::chrono::duration<double>(TOTAL2).count() / TOTAL2iter << "\n";
+      Rcpp::Rcout << "  - The rest is squandered on the failed attempts to jump " << "\n";
+      Rcpp::Rcout << " - Total num of atomic iterations " << (int) totaliter << "\n";
     }
 
   }

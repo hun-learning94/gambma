@@ -110,6 +110,9 @@ double getR2QM(const unsigned &familyLink,
   } else {
     tmp = arma::dot(arma::pow(EtaHat - offset - AlphaHat, 2), JEtaHat);
   }
+  // if(std::is_nan(tmp)){
+  //   Rcpp::Rcout << AlphaHat << "\n";
+  // }
   return tmp;
 }
 
@@ -293,7 +296,7 @@ void Lpy(double& Lpy_out,
     Rcpp::stop("Lpy says, What da fuck?");
   }
   if(std::isnan(Lpy_out) != 0){
-    // Rcpp::Rcout << "nan occured \n";
+    Rcpp::Rcout << "nan occured \n";
     // Rcpp::Rcout << "comp1 : " << comp1 << '\n';
     // Rcpp::Rcout << "comp2 : " << comp2 << '\n';
     Rcpp::stop("\n");
@@ -327,17 +330,18 @@ void gPosteriors(double& g_,
       // Rcpp::Rcout << gg << "\n";
     } else if(gprior== 1){ // Hyper-g
       aa = 1.0; bb = 2.0; nu = 1.0; ss = .0;
-      aaPos = 0.5*(aa+p); ssPos = (ss+r2Qm)/(2.0);
+      aaPos = 0.5*(aa+p); ssPos = (ss+r2Qm)/(2.0*nu);
       v_ = rtgamma_cpp(aaPos, ssPos, 0.0, 1.0);
       g_ = 1.0/(v_/nu) - 1.0;
     } else if(gprior == 2){ // Uniform
       aa = 2.0; bb = 2.0; nu = 1.0;ss = .0;
-      aaPos = 0.5*(aa+p); ssPos = (ss+r2Qm)/(2.0);
+      aaPos = 0.5*(aa+p); ssPos = (ss+r2Qm)/(2.0*nu);
       v_ = rtgamma_cpp(aaPos, ssPos, 0.0, 1.0);
       g_ = 1.0/(v_/nu) - 1.0;
     } else if(gprior == 3){ // Hyper-g/n
       aa = 1.0; bb = 2.0; rr = 1.5; ss=0.0; nu = 1.0; kappa = 1.0/n;
-      aaPos = 0.5*(aa+p); bbPos = bb/2.0; zzPos= rr; ssPos = (ss+r2Qm)/(2.0*nu); xxPos = 1.0/kappa - 1.0; 
+      aaPos = 0.5*(aa+p); bbPos = bb/2.0; zzPos= rr; 
+      ssPos = (ss+r2Qm)/(2.0*nu); xxPos = 1.0/kappa - 1.0; 
       rCCH_void(v_, t_, l_, m_, aaPos, bbPos, zzPos, ssPos, xxPos);
       g_ = 1.0/(v_/nu) - 1.0;
     } else if(gprior == 4){ // Beta-prime
@@ -346,18 +350,19 @@ void gPosteriors(double& g_,
       rCH_void(v_, l_, aaPos, bbPos, ssPos);
       g_ = 1.0/(v_/nu) - 1.0;
     } else if(gprior == 5){ // ZS-adapted
-      aa = 1.0; bb = 2.0; ss = n+3.0; 
-      aaPos = 0.5*(aa+p); ssPos = (ss+r2Qm)/(2.0);
+      aa = 1.0; bb = 2.0; ss = n+3.0; nu = 1.0;
+      aaPos = 0.5*(aa+p); ssPos = (ss+r2Qm)/(2.0*nu);
       v_ = rtgamma_cpp(aaPos, ssPos, 0.0, 1.0);
       g_ = 1.0/(v_/nu) - 1.0;
     } else if(gprior == 6){ // Robust
       aa = 1.0; bb = 2.0; rr = 1.5; nu = (n+1.0)/(p+1.0); kappa = 1.0; ss = .0;
-      aaPos = 0.5*(aa+p); ssPos = (ss+r2Qm)/(2.0);
+      aaPos = 0.5*(aa+p); ssPos = (ss+r2Qm)/(2.0*nu);
       v_ = rtgamma_cpp(aaPos, ssPos, 0.0, 1.0);
       g_ = 1.0/(v_/nu) - 1.0;
     } else if(gprior == 7){ // Intrinsic
       aa = 1.0; bb = 1.0; rr = 1.0; ss=0.0; nu = (n+p+1.0)/(p+1.0); kappa = (n+p+1.0)/n;
-      aaPos = 0.5*(aa+p); bbPos = bb/2.0; zzPos= rr; ssPos = (ss+r2Qm)/(2.0*nu); xxPos = 1.0/kappa - 1.0; 
+      aaPos = 0.5*(aa+p); bbPos = bb/2.0; zzPos= rr; ssPos = (ss+r2Qm)/(2.0*nu); 
+      xxPos = 1.0/kappa - 1.0; 
       rCCH_void(v_, t_, l_, m_, aaPos, bbPos, zzPos, ssPos, xxPos);
       g_ = 1.0/(v_/nu) - 1.0;
     } else if(gprior == 8){ // g = user input
@@ -401,7 +406,8 @@ void gPosteriors(double& g_,
       g_ = 1.0/(v_/nu) - 1.0;
     } else if(gprior == 7){ // Intrinsic
       aa = 1.0; bb = 1.0; rr = 1.0; nu = (n+p+1.0)/(p+1.0); kappa = (n+p+1.0)/n;
-      aaPos = 0.5*(aa+p); bbPos = bb/2.0; zzPos = 0.5*(n-1.0); wwPos = rr; xxPos = (r2Qm/nu)/(1.0-r2Qm); yyPos = 1.0/kappa-1.0;
+      aaPos = 0.5*(aa+p); bbPos = bb/2.0; zzPos = 0.5*(n-1.0); 
+      wwPos = rr; xxPos = (r2Qm/nu)/(1.0-r2Qm); yyPos = 1.0/kappa-1.0;
       rAPL_void(v_, t_,q_,l_,m_, aaPos, bbPos, zzPos, wwPos, xxPos, yyPos);
       g_ = 1.0/(v_/nu) - 1.0;
     } else if(gprior == 8){ // g = user input
@@ -477,7 +483,7 @@ arma::vec BetaPost_z(const arma::vec &BetaHat,
   return beta;
 }
 
-
+				
 
 
 

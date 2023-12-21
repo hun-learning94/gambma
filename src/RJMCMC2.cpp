@@ -2,11 +2,9 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
-#include "CRAD.h"
+#include "CRAD2.h"
 
-void BtrBpr_update(const int &BDRL,
-                   const arma::vec &xtr,
-                   const arma::vec &xpr,
+void BtrBpr_update2(const int &BDRL,
                    const unsigned &p,
                    arma::mat &B_trP,
                    arma::mat &B_prP,
@@ -14,34 +12,44 @@ void BtrBpr_update(const int &BDRL,
                    arma::uvec &knotsidxP,
                    arma::uvec &betaidxP,
                    const double &newknot,
-                   const unsigned &oldknotidx){
+                   const unsigned &oldknotidx,
+                   const arma::mat& X,
+                   const arma::mat& X_pr,
+                   const arma::mat& XLin){
   if((BDRL != 0) && (BDRL != 1) && (BDRL != 2)) Rcpp::stop("Invalied BDRL");
   
-  arma::uvec sortidx;
-  double bdknot_l = -.01;
-  double bdknot_r = 1.01;
-  // B.each_col() = (-arma::pow(arma::abs(x - augknot(nk-1)), 3) + arma::pow(arma::abs(x - augknot(0)), 3)) / 
-  //   (augknot(nk-1) - augknot(0));
-  // for(unsigned i{0}; i < (nk-2); i++){
-  //   B.col(i + 1) -= (arma::pow(arma::abs(x - augknot(nk-1)), 3) - arma::pow(arma::abs(x - augknot(i)), 3)) / 
-  //     (augknot(nk-1) - augknot(i));
-  // }
+  // double bdknot_l = -0.01;
+  // double bdknot_r = 1.01;
+  Rcpp::List CRAD_tr;
+  
   if(BDRL == 1){ // death -> kill existing column
+    // Rcpp::Rcout << "oldknotidx " << oldknotidx << ", knotsP.n_elem " << knotsP.n_elem << 
+    //   ", knotsidxP.n_elem " << knotsidxP.n_elem << 
+    //   ", betaidxP.n_elem " << betaidxP.n_elem << "\n";
     
     knotsP.shed_row(oldknotidx);
     knotsidxP.shed_row(oldknotidx);
-    betaidxP.shed_row(oldknotidx);
-    B_trP.shed_col(oldknotidx);
-    B_prP.shed_col(oldknotidx);
+    
+    CRAD_tr = CRAD_cpp2(X, XLin, knotsP, knotsidxP, true, .0); // full model
+    B_trP = Rcpp::as<arma::mat>(CRAD_tr["X"]); // expanded for train
+    B_prP = CRAD_test_cpp2(X_pr, XLin, CRAD_tr);
+    betaidxP = Rcpp::as<arma::uvec>(CRAD_tr["betaidx"]);
+    // arma::ivec isknot = markIsKont(betaidx, howmanybasisterms); // mark non-knot basis terms (linear etc)
+    
+    // betaidxP.shed_row(oldknotidx);
+    // B_trP.shed_col(oldknotidx);
+    // B_prP.shed_col(oldknotidx);
     
   } else { // birth, relocate -> add new column
     if(BDRL == 2){ // relocate -> kill existing column
-    
+      // Rcpp::Rcout << "oldknotidx " << oldknotidx << ", knotsP.n_elem " << knotsP.n_elem << 
+      //   ", knotsidxP.n_elem " << knotsidxP.n_elem << 
+      //   ", betaidxP.n_elem " << betaidxP.n_elem << "\n";
       knotsP.shed_row(oldknotidx);
       knotsidxP.shed_row(oldknotidx);
-      betaidxP.shed_row(oldknotidx);
-      B_trP.shed_col(oldknotidx);
-      B_prP.shed_col(oldknotidx);
+      // betaidxP.shed_row(oldknotidx);
+      // B_trP.shed_col(oldknotidx);
+      // B_prP.shed_col(oldknotidx);
     }
     
     // if(knotsP(knotsP.n_elem-1) < 0.0001){
@@ -52,27 +60,32 @@ void BtrBpr_update(const int &BDRL,
     
     // expand new column
     // Rcpp::Rcout << "Expanding new col \n";
-    arma::vec Btr_newcol = 
-      (-armapmax(arma::pow(arma::abs(xtr - bdknot_r), 3), 0) + armapmax(arma::pow(arma::abs(xtr - bdknot_l), 3), 0)) / (bdknot_r - bdknot_l) -
-      (armapmax(arma::pow(arma::abs(xtr - bdknot_r), 3), 0) - armapmax(arma::pow(arma::abs(xtr - newknot), 3), 0)) / (bdknot_r - newknot);
-    if(Btr_newcol.has_nan()) Rcpp::stop("nan B_trP");
-    double Btr_newcol_mean = arma::as_scalar(arma::mean(Btr_newcol));
-    Btr_newcol = Btr_newcol - Btr_newcol_mean;
-    arma::vec Bpr_newcol = 
-      (-armapmax(arma::pow(arma::abs(xpr - bdknot_r), 3), 0) + armapmax(arma::pow(arma::abs(xpr - bdknot_l), 3), 0)) / (bdknot_r - bdknot_l) -
-      (armapmax(arma::pow(arma::abs(xpr - bdknot_r), 3), 0) - armapmax(arma::pow(arma::abs(xpr - newknot), 3), 0)) / (bdknot_r - newknot);
-    if(Bpr_newcol.has_nan()) Rcpp::stop("nan B_prP");
-    Bpr_newcol = Bpr_newcol - Btr_newcol_mean;
+    // arma::vec Btr_newcol = 
+    //   (-armapmax(arma::pow(arma::abs(xtr - bdknot_r), 3), 0) + armapmax(arma::pow(arma::abs(xtr - bdknot_l), 3), 0)) / (bdknot_r - bdknot_l) -
+    //   (armapmax(arma::pow(arma::abs(xtr - bdknot_r), 3), 0) - armapmax(arma::pow(arma::abs(xtr - newknot), 3), 0)) / (bdknot_r - newknot);
+    // if(Btr_newcol.has_nan()) Rcpp::stop("nan B_trP");
+    // double Btr_newcol_mean = arma::as_scalar(arma::mean(Btr_newcol));
+    // Btr_newcol = Btr_newcol - Btr_newcol_mean;
+    // arma::vec Bpr_newcol = 
+    //   (-armapmax(arma::pow(arma::abs(xpr - bdknot_r), 3), 0) + armapmax(arma::pow(arma::abs(xpr - bdknot_l), 3), 0)) / (bdknot_r - bdknot_l) -
+    //   (armapmax(arma::pow(arma::abs(xpr - bdknot_r), 3), 0) - armapmax(arma::pow(arma::abs(xpr - newknot), 3), 0)) / (bdknot_r - newknot);
+    // if(Bpr_newcol.has_nan()) Rcpp::stop("nan B_prP");
+    // Bpr_newcol = Bpr_newcol - Btr_newcol_mean;
     
     // append to knotsP, knotsidxP, B_trP, B_prP
     // Rcpp::Rcout << "Appending new col \n";
-    unsigned insrtpos = oldknotidx;
-    if(oldknotidx == 0) insrtpos = 1;
-    knotsP.insert_rows(insrtpos, arma::vec(1, arma::fill::value(newknot)));
-    knotsidxP.insert_rows(insrtpos, arma::uvec(1, arma::fill::value(p+1)));
-    betaidxP.insert_rows(insrtpos, arma::uvec(1, arma::fill::value(p+1)));
-    B_trP.insert_cols(insrtpos, Btr_newcol);
-    B_prP.insert_cols(insrtpos, Bpr_newcol);
+    knotsP.insert_rows(knotsP.n_elem, arma::vec(1, arma::fill::value(newknot)));
+    knotsidxP.insert_rows(knotsidxP.n_elem, arma::uvec(1, arma::fill::value(p+1)));
+    // betaidxP.insert_rows(betaidxP.n_elem, arma::uvec(1, arma::fill::value(p+1)));
+    // Rcpp::Rcout << "B_trP.n_rows " << B_trP.n_rows<< ", Btr_newcol.n_rows " << Btr_newcol.n_rows  << "\n";
+    // Rcpp::Rcout << "B_prP.n_rows " << B_prP.n_rows<< ", Bpr_newcol.n_rows " << Bpr_newcol.n_rows  << "\n";
+    // B_trP.insert_cols(B_trP.n_cols, Btr_newcol);
+    // B_prP.insert_cols(B_prP.n_cols, Bpr_newcol);
+    
+    CRAD_tr = CRAD_cpp2(X, XLin, knotsP, knotsidxP, true, .0); // full model
+    B_trP = Rcpp::as<arma::mat>(CRAD_tr["X"]); // expanded for train
+    B_prP = CRAD_test_cpp2(X_pr, XLin, CRAD_tr);
+    betaidxP = Rcpp::as<arma::uvec>(CRAD_tr["betaidx"]);
     
     // if(knotsP(knotsP.n_elem-1) < 0.0001){
     //   Rcpp::Rcout << BDRL << "\n";
@@ -97,20 +110,21 @@ void BtrBpr_update(const int &BDRL,
 }
 
 
-void RJMCMC(double &PtoC, 
+void RJMCMC2(double &PtoC, 
             double &CtoP,
             const double &nu, 
             const double &bir_p, 
             const double &dea_p, 
-            const arma::vec &xtr,
-            const arma::vec &xpr,
             const unsigned &p,
             const unsigned &maxk,
             arma::mat &B_trP,
             arma::mat &B_prP,
             arma::vec &knotsP,
             arma::uvec &knotsidxP,
-            arma::uvec &betaidxP)
+            arma::uvec &betaidxP,
+            const arma::mat& X,
+            const arma::mat& X_pr,
+            const arma::mat& XLin)
 {
   unsigned idx{0}, oldknotidx{0};
   double dice, idx_knot, new_knot, sum_bir;
@@ -121,9 +135,15 @@ void RJMCMC(double &PtoC,
   } else {
     subknots = knotsP(subknotsidx);
   }
-  int timer{0};
   unsigned BDRL{0};
   
+  // Rcpp::Rcout << "p " << p << "\n";
+  // Rcpp::Rcout << "knotsP \n";
+  // Rcpp::Rcout << knotsP.t()<< "\n";
+  // Rcpp::Rcout << "subknotsidx \n";
+  // Rcpp::Rcout << subknotsidx.t() << "\n";
+  // Rcpp::Rcout << "subknots \n";
+  // Rcpp::Rcout << subknots.t() << "\n";
   
   // throw dice
   // birth: BDRL = 0, death: BDRL = 1; relocate: BDRL = 2;
@@ -134,41 +154,12 @@ void RJMCMC(double &PtoC,
   } else { BDRL = 2; }
   
   int fuck{0};
-  double distance = 50.0;
+  double distance = 25.0;
   
   if(BDRL == 0){
     // birth step ///////////////////////////////////////////////////////////////////////////////////////
     if(subknots.n_elem >= (maxk+1)) Rcpp::stop("");
-    if(subknots.n_elem > 0){
-      try{idx = arma::randi<unsigned>(arma::distr_param(0, subknots.n_elem - 1));}
-      catch(...){
-        Rcpp::Rcout<< "birth subknots " << subknots.t()<<"\n" ;
-        Rcpp::stop("rand i error");
-      }
-      idx_knot = subknots(idx);
-      oldknotidx = subknotsidx(idx);
-      new_knot = R::rbeta(nu * idx_knot, nu * (1.0 - idx_knot));
-      new_knot = std::round(new_knot * distance) / distance;
-      while(std::abs(new_knot - 1.0)<0.01 || std::abs(new_knot - 0.0)<0.01){
-        new_knot = R::rbeta(nu * idx_knot, nu * (1.0 - idx_knot));
-        new_knot = std::round(new_knot * distance) / distance;
-        fuck++;
-        if(fuck > 20) Rcpp::stop("propose failed");
-      }
-      subknotsP = arma::vec(subknots.n_elem + 1, arma::fill::zeros);
-      subknotsP.subvec(0, subknots.n_elem - 1) = subknots;
-      subknotsP(subknots.n_elem) = new_knot;
-      // subknotsP = arma::sort(subknotsP);
-      
-      sum_bir = 0.0;
-      for(unsigned i{0}; i<subknots.n_elem; i++){
-        sum_bir += R::dbeta(new_knot, subknots(i)*nu, (1.0 - subknots(i))*nu, false);
-      }
-      sum_bir = std::min(1.0, sum_bir);
-      CtoP = bir_p * sum_bir / (double) subknots.n_elem;
-      PtoC = dea_p / (double) (1 + subknots.n_elem);  
-      
-    } else {
+    if(subknots.n_elem == (unsigned) 0){
       // numknot 0 -> 1
       new_knot = 0.001 + arma::randu<double>() * (0.999-0.001);
       new_knot = std::round(new_knot * distance) / distance;
@@ -183,6 +174,37 @@ void RJMCMC(double &PtoC,
       
       CtoP = bir_p;
       PtoC = dea_p;
+    } else if(subknots.n_elem > (unsigned) 0){
+      try{
+        // Rcpp::Rcout << "birth \n";
+        idx = arma::randi<unsigned>(arma::distr_param(0, subknots.n_elem - 1));
+      }
+      catch(...){
+        Rcpp::Rcout<< "birth subknots " << subknots.t()<<"\n" ;
+        Rcpp::stop("rand i error");
+      }
+      idx_knot = subknots(idx);
+      new_knot = R::rbeta(nu * idx_knot, nu * (1.0 - idx_knot));
+      new_knot = std::round(new_knot * distance) / distance;
+      while(std::abs(new_knot - 1.0)<0.01 || std::abs(new_knot - 0.0)<0.01){
+        new_knot = R::rbeta(nu * idx_knot, nu * (1.0 - idx_knot));
+        new_knot = std::round(new_knot * distance) / distance;
+        fuck++;
+        if(fuck > 20) Rcpp::stop("propose failed");
+      }
+      subknotsP = arma::vec(subknots.n_elem + 1, arma::fill::zeros);
+      subknotsP.subvec(0, subknots.n_elem - 1) = subknots;
+      subknotsP(subknots.n_elem) = new_knot;
+      subknotsP = arma::sort(subknotsP);
+      
+      sum_bir = 0.0;
+      for(unsigned i{0}; i<subknots.n_elem; i++){
+        sum_bir += R::dbeta(new_knot, idx_knot*nu, (1.0 - idx_knot)*nu, false);
+      }
+      sum_bir = std::min(1.0, sum_bir);
+      CtoP = bir_p * sum_bir / (double) subknots.n_elem;
+      PtoC = dea_p / (double) (1 + subknots.n_elem);  
+      
     }
     
     if(std::isnan(CtoP) != 0 || std::isnan(PtoC) != 0 ||
@@ -197,15 +219,16 @@ void RJMCMC(double &PtoC,
   } else if (BDRL == 1){
     // death step ///////////////////////////////////////////////////////////////////////////////////////
     // Rcpp::Rcout << "death chosen \n";
-    if(subknots.n_elem == 0) Rcpp::stop("");
+    if(subknots.n_elem+1 == 1) Rcpp::stop("");
     // 1) choose one knot and kill
     try{
+      // Rcpp::Rcout << "death \n";
       idx = arma::randi<unsigned>(arma::distr_param(0, subknots.n_elem - 1));
+      oldknotidx = subknotsidx(idx);
     } catch(...){
       Rcpp::Rcout<< "death subknots " << subknots.t()<<"\n" ;
       Rcpp::stop("rand i error");
     }
-    oldknotidx = subknotsidx(idx);
     new_knot = subknots(idx);
     subknotsP = subknots;
     subknotsP.shed_row(idx);
@@ -238,12 +261,14 @@ void RJMCMC(double &PtoC,
     // 1) choose one knot and relocate
     if(subknots.n_elem == 0) Rcpp::stop("");
     try{
+      // Rcpp::Rcout << "relocate \n";
+      // Rcpp::Rcout << subknots.n_elem << "\n";
       idx = arma::randi<unsigned>(arma::distr_param(0, subknots.n_elem - 1));
+      oldknotidx = subknotsidx(idx);
     } catch(...) {
       // Rcpp::Rcout<< "relocation subknots " << subknots.t()<<"\n" ;
       Rcpp::stop("rand i error");
     }
-    oldknotidx = subknotsidx(idx);
     idx_knot = subknots(idx);
     new_knot = R::rbeta(nu * idx_knot, nu * (1.0 - idx_knot));
     new_knot = std::round(new_knot * distance) / distance;
@@ -253,7 +278,7 @@ void RJMCMC(double &PtoC,
     // 2) get knotsP, knotsidxP
     subknotsP = subknots;
     subknotsP(idx) = new_knot; // relocate
-    // subknotsP = arma::sort(subknotsP);
+    subknotsP = arma::sort(subknotsP);
     // Rcout << "sub done2 \n";
     
     CtoP = (1.0 - dea_p - bir_p) * 
@@ -271,16 +296,8 @@ void RJMCMC(double &PtoC,
       Rcpp::stop("\n");
     }
   }
-  // Rcpp::Rcout << "\n";
-  // Rcpp::Rcout << "BDRL " << BDRL << " oldknotidx "<< oldknotidx <<  " new_knot " << new_knot << "\n";
-  // Rcpp::Rcout << knotsP.t() << "\n";
-  // Rcpp::Rcout << knotsidxP.t() << "\n";
-  // Rcpp::Rcout << betaidxP.t() << "\n";
-  // Rcpp::Rcout << B_trP.row(0) << "\n";
-  // Rcpp::Rcout << B_prP.row(0) << "\n";
-  BtrBpr_update(BDRL,
-                xtr,
-                xpr,
+  
+  BtrBpr_update2(BDRL,
                 p,
                 B_trP,
                 B_prP,
@@ -288,10 +305,7 @@ void RJMCMC(double &PtoC,
                 knotsidxP,
                 betaidxP,
                 new_knot,
-                oldknotidx);
-  // Rcpp::Rcout << knotsP.t() << "\n";
-  // Rcpp::Rcout << knotsidxP.t() << "\n";
-  // Rcpp::Rcout << betaidxP.t() << "\n";
-  // Rcpp::Rcout << B_trP.row(0) << "\n";
-  // Rcpp::Rcout << B_prP.row(0) << "\n";
+                oldknotidx,
+                X, X_pr, XLin);
+  // Rcpp::Rcout << "BtrBpr update done \n";
 }

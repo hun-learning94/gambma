@@ -17,8 +17,16 @@
     .Call(`_gambms_gambmsFREE`, y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, initS, MCMCiter, thin, bir_p, dea_p, nu, Rglm, nearPDres, storeFit, printiter)
 }
 
+.gambmsFREE2 <- function(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, initS, MCMCiter, thin, bir_p, dea_p, nu, Rglm, nearPDres, storeFit, printiter) {
+    .Call(`_gambms_gambmsFREE2`, y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, initS, MCMCiter, thin, bir_p, dea_p, nu, Rglm, nearPDres, storeFit, printiter)
+}
+
 .gambmsVS <- function(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, printiter) {
     .Call(`_gambms_gambmsVS`, y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, printiter)
+}
+
+.gambmsVS2 <- function(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, printiter) {
+    .Call(`_gambms_gambmsVS2`, y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, printiter)
 }
 
 .rCH <- function(nsamp, burnin, aa, bb, ss) {

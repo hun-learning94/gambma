@@ -54,10 +54,9 @@ mf = y~ncs(x1, nk=maxk)+ ncs(x2, nk = maxk)  + ncs(x3, nk = maxk)
 fit_sim = tryCatch(
   gambms(mf, dat,
          knotConfig = "FREE",
-         prior = "Robust",
+         prior = "Intrinsic",
          family = "poisson",
-         printIter=500,
-         freeCtrl=list(mcmcIter = 4000, thin = maxk)),
+         printIter = 500),
   error = function(cnd)cnd
 )
 plot(fit_sim)
@@ -68,10 +67,10 @@ load("test/fit_sim.rdata")
 plot(fit_sim)
 ```
 
-### Real data 1) Boston Housing Prices (Gaussian, VS-knot)
+### Real data 1) Boston Housing Prices (Gaussian, EVEN-knot)
 ```{r, eval=F}
 data("Boston")
-maxk=15; lambda = 1
+maxk=15; lambda = .1
 mf = log(medv) ~ chas +
   ncs(crim, nk = maxk, lambda=lambda) +
   ncs(zn, nk = maxk, lambda=lambda) +
@@ -86,8 +85,8 @@ mf = log(medv) ~ chas +
   ncs(black, nk = maxk, lambda=lambda) +
   ncs(lstat, nk = maxk, lambda=lambda)
 fit =  gambms(mf, Boston,
-                 knotConfig = "VS",
-                 prior = "Robust",
+                 knotConfig = "EVEN",
+                 prior = "Intrinsic",
                  family = "gaussian")
 summary(fit)
 plot(fit)
@@ -105,23 +104,23 @@ plotnumknot(fit_Boston)
 plotresiduals(fit_Boston)
 ```
 
-### Real data 2) Pima Indian Diabetes (Bernoulli, EVEN-knot)
+### Real data 2) Pima Indian Diabetes (Bernoulli, VS-knot)
 ```{r, eval=F}
 data("Pima")
-maxk=15; lambda = 1
-mf = diabetes ~
+maxk=10; lambda = .1
+mf = diabetes ~ 
   ncs(pregnant, nk = maxk, lambda = lambda) +
   ncs(glucose, nk = maxk, lambda = lambda) +
   ncs(pressure, nk = maxk, lambda = lambda) +
-  ncs(triceps, nk = maxk, lambda = lambda) +
+  ncs(triceps, nk = 5, lambda = lambda) +
   ncs(mass, nk = maxk, lambda = lambda) +
   ncs(pedigree, nk = maxk, lambda = lambda) +
-  ncs(age, nk = maxk, lambda = lambda)
+  ncs(age, nk = 5, lambda = lambda)
 fit =  gambms(mf, Pima,
-              knotConfig = "EVEN",
-              prior = "Robust",
-              family = "bernoulli",
-              printIter = 500)
+         knotConfig = "VS",
+         prior = "Intrinsic",
+         family = "bernoulli",
+         Ctrl = list(mcmcIter = 5000))
 
 summary(fit)
 plot(fit)

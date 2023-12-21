@@ -236,4 +236,12 @@ void zToKnots(arma::vec &knotsZ,
               const arma::vec &knots,
               const arma::uvec &knotsidx);
 
+
+// 11122023
+double alphaAdj(const arma::vec &JEtaHat,
+				const arma::vec &beta,
+				const arma::vec &betahat,
+				const arma::mat &B_tr);
+
+
 #endif // __gambmsSupportFunctions__

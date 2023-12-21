@@ -19,16 +19,16 @@ arma::vec lpy2nd_probit(double glmWeight, const arma::vec &x, const arma::vec &y
 ////////////////////////////////////////////////////////////////////////////////
 // calculation of J(eta), J(alpha), J(beta), r2, Qm
 // J(Eta) = - d^2 l(eta) / d eta^2
-arma::vec JEta(const double &glmWeight,
-               const arma::vec &y,
-               const arma::vec& EtaHat,
+arma::vec JEta(const double &glmWeight, 
+               const arma::vec &y, 
+               const arma::vec& EtaHat, 
                const unsigned& familyLink);
 
 // J(Beta) = X_cen^T J(Eta) X_cen (X_cen = (I-P_1)X, P_1 = ortho. proj. onto 1 under info. inp. defined by J(Eta))
 // rootJBeta = sqrt(J)*(I-P_1)X
-arma::mat rootJBeta(const arma::vec &BetaHat,
-                    const arma::mat &Xm,
-                    const arma::vec &JEtaHat,
+arma::mat rootJBeta(const arma::vec &BetaHat, 
+                    const arma::mat &Xm, 
+                    const arma::vec &JEtaHat, 
                     const unsigned& familyLink);
 
 // J(alpha)
@@ -37,7 +37,7 @@ double JAlpha(const arma::vec &JEta);
 // r2 = ||betahat * X ||^2 / ||y-meany||^2
 // Qm = beta^T J(beta) beta = sum((Etahat[i]-alphahat)^*J(EtaHat)[i,i])
 double getR2QM(const unsigned &familyLink,
-               const arma::vec &y,
+               const arma::vec &y, 
                const arma::vec &offset,
                const double& AlphaHat,
                const arma::vec &EtaHat,
@@ -46,7 +46,7 @@ double getR2QM(const unsigned &familyLink,
 
 ////////////////////////////////////////////////////////////////////////////////
 // initial starting point of IRLS algorithm
-arma::vec etastart(const double &glmWeight,
+arma::vec etastart(const double &glmWeight, 
                    const arma::mat& y,
                    const unsigned& familyLink);
 
@@ -58,7 +58,7 @@ arma::vec etastart(const double &glmWeight,
 // GLM
 void glmLoglik(double& glmLoglik_out,
                const double& glmWeight,
-               const arma::vec& y,
+               const arma::vec& y, 
                const arma::mat& X,
                const arma::vec& offset,
                const arma::vec& EtaHat,
@@ -67,7 +67,7 @@ void Lpy(double& Lpy_out,
          double& comp1,
          double& comp2,
          const double& glmWeight,
-         const arma::vec& y,
+         const arma::vec& y, 
          const arma::mat& X,
          const arma::vec& offset,
          const arma::vec& EtaHat,
@@ -80,9 +80,9 @@ void Lpy(double& Lpy_out,
 ////////////////////////////////////////////////////////////////////////////////
 // gPosteriors
 void gPosteriors(double& g_,
-                 double& v_,
-                 double& t_,
-                 double& q_,
+                 double& v_, 
+                 double& t_, 
+                 double& q_, 
                  double& l_,
                  double& m_,
                  const double &n,
@@ -97,20 +97,20 @@ void gPosteriors(double& g_,
 double AlphaPost(double AlphaHat, double JAlphaHat, double phi);
 
 void basechol(arma::mat &toBeCholed,
-              const Rcpp::Function &nearPDres,
+              const Rcpp::Function &nearPDres, 
               const Rcpp::Function &Rbasechol);
 
-arma::vec BetaPost(const arma::vec &BetaHat,
-                   const arma::mat &rootJBetaHat,
-                   const double& g,
+arma::vec BetaPost(const arma::vec &BetaHat, 
+                   const arma::mat &rootJBetaHat, 
+                   const double& g, 
                    const double& phi,
                    const Rcpp::Function &nearPDres,
                    const Rcpp::Function &Rbasechol,
                    const Rcpp::Function &crossproduct);
 
-arma::vec BetaPost_z(const arma::vec &BetaHat,
+arma::vec BetaPost_z(const arma::vec &BetaHat, 
                      const arma::mat &rootJBetaHat,
-                     const double &g,
+                     const double &g, 
                      const double &phi,
                      const arma::ivec &z,
                      const Rcpp::Function &nearPDres,

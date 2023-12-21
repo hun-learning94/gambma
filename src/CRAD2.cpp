@@ -1,9 +1,9 @@
-#include "CRAD.h"
+#include "CRAD2.h"
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 using namespace arma;
 
-arma::vec armapmax(const arma::vec &x,
+arma::vec armapmax2(const arma::vec &x,
                    const double &y){
   arma::vec res(x.n_elem);
   for(unsigned i{0}; i<x.n_elem; i++){
@@ -12,7 +12,7 @@ arma::vec armapmax(const arma::vec &x,
   return res;
 }
 
-arma::mat CRADNS_1d_cpp(const arma::vec& x, const arma::vec &knot, 
+arma::mat CRADNS_1d_cpp2(const arma::vec& x, const arma::vec &knot, 
                         bool knotalive, double bdmargin){
   unsigned N{x.n_elem};
   arma::mat B;
@@ -28,19 +28,20 @@ arma::mat CRADNS_1d_cpp(const arma::vec& x, const arma::vec &knot,
     augknot.subvec(1, augknot.n_elem - 2) = knot;
     unsigned nk{augknot.n_elem};
     B.set_size(N, nk - 1);
+    
+    // CRADNS original
     B.each_col() = 
-      (-armapmax(arma::pow(arma::abs(x - augknot(nk-1)), 3), 0) + 
-      armapmax(arma::pow(arma::abs(x - augknot(0)), 3), 0)) / 
-      (augknot(nk-1) - augknot(0));
+      // (-armapmax(arma::pow(arma::abs(x - augknot(nk-1)), 3), 0) + 
+      // armapmax(arma::pow(arma::abs(x - augknot(0)), 3), 0)) / 
+      // (augknot(nk-1) - augknot(0));
+      (-armapmax2(arma::pow(arma::abs(x - augknot(nk-1)), 3), 0) + 
+      armapmax2(arma::pow(arma::abs(x - augknot(nk-2)), 3), 0)) / 
+      (augknot(nk-1) - augknot(nk-2));
     for(unsigned i{0}; i < (nk-2); i++){
-      // B.col(i + 1) -= 
-      //   (armapmax(arma::pow(arma::abs(x - augknot(nk-1)), 3), 0) - 
-      //   armapmax(arma::pow(arma::abs(x - augknot(i)), 3),0)) /
-      //   (augknot(nk-1) - augknot(i));
       B.col(i + 1) -=
-        (armapmax(arma::pow(arma::abs(x - augknot(nk-1)), 3), 0) -
-        armapmax(arma::pow(arma::abs(x - augknot(i+1)), 3),0)) /
-        (augknot(nk-1) - augknot(i+1));
+        (armapmax2(arma::pow(arma::abs(x - augknot(i)), 3), 0) -
+        armapmax2(arma::pow(arma::abs(x - augknot(i+1)), 3),0)) /
+        (augknot(nk-1) - augknot(i));
     }
     B.col(0) = x;
   } else {
@@ -51,7 +52,7 @@ arma::mat CRADNS_1d_cpp(const arma::vec& x, const arma::vec &knot,
 }
 
 
-arma::mat CRAD_1d_cpp(const arma::vec& x, const arma::vec &knot, 
+arma::mat CRAD_1d_cpp2(const arma::vec& x, const arma::vec &knot, 
                       bool knotalive){
   unsigned N{x.n_elem};
   arma::mat B;
@@ -59,7 +60,7 @@ arma::mat CRAD_1d_cpp(const arma::vec& x, const arma::vec &knot,
     unsigned nk{knot.n_elem};
     B.set_size(N, nk + 3);
     for(unsigned i{0}; i < 3; i++){ B.col(i) = arma::pow(x, i+1); }
-    for(unsigned i{0}; i < nk; i++){ B.col(i + 3) = armapmax(arma::pow(arma::abs(x - knot(i)), 3), 0); }
+    for(unsigned i{0}; i < nk; i++){ B.col(i + 3) = armapmax2(arma::pow(arma::abs(x - knot(i)), 3), 0); }
   } else {
     B.set_size(N, 3);
     for(unsigned i{0}; i < 3; i++){ B.col(i) = arma::pow(x, i+1); }
@@ -68,7 +69,7 @@ arma::mat CRAD_1d_cpp(const arma::vec& x, const arma::vec &knot,
 }
 
 
-Rcpp::List CRAD_cpp(const arma::mat &X, 
+Rcpp::List CRAD_cpp2(const arma::mat &X, 
                     const arma::mat &X_lin, 
                     const arma::vec &knots, 
                     const arma::uvec &knotsidx,
@@ -134,7 +135,7 @@ Rcpp::List CRAD_cpp(const arma::mat &X,
   if(NS){
     for(unsigned i{0}; i < p; i++){
       B.cols(arma::find(betaidx == (i+1)) - p_lin) = 
-        CRADNS_1d_cpp(X.col(i), 
+        CRADNS_1d_cpp2(X.col(i), 
                       knots.elem(arma::find(knotsidx == (i+1))),
                       knotalive(i),
                       bdmargin);
@@ -142,7 +143,7 @@ Rcpp::List CRAD_cpp(const arma::mat &X,
   } else {
     for(unsigned i{0}; i < p; i++){
       B.cols(arma::find(betaidx == (i+1)) - p_lin) = 
-        CRAD_1d_cpp(X.col(i), 
+        CRAD_1d_cpp2(X.col(i), 
                     knots.elem(arma::find(knotsidx == (i+1))),
                     knotalive(i));
     }
@@ -165,7 +166,7 @@ Rcpp::List CRAD_cpp(const arma::mat &X,
   );
 }
 
-arma::mat CRAD_test_cpp(const arma::mat &testX, 
+arma::mat CRAD_test_cpp2(const arma::mat &testX, 
                         const arma::mat &X_lin, 
                         const Rcpp::List &CRADlist){
   
@@ -186,7 +187,7 @@ arma::mat CRAD_test_cpp(const arma::mat &testX,
   if(NS){
     for(unsigned i{0}; i < p; i++){
       B.cols(arma::find(betaidx == (i+1)) - p_lin) = 
-        CRADNS_1d_cpp(testX.col(i), 
+        CRADNS_1d_cpp2(testX.col(i), 
                       knots.elem(arma::find(knotsidx == (i+1))),
                       knotalive(i),
                       bdmargin);
@@ -194,7 +195,7 @@ arma::mat CRAD_test_cpp(const arma::mat &testX,
   } else {
     for(unsigned i{0}; i < p; i++){
       B.cols(arma::find(betaidx == (i+1)) - p_lin) = 
-        CRAD_1d_cpp(testX.col(i), 
+        CRAD_1d_cpp2(testX.col(i), 
                     knots.elem(arma::find(knotsidx == (i+1))),
                     knotalive(i));
     }
