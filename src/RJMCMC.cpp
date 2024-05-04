@@ -121,7 +121,7 @@ void RJMCMC(double &PtoC,
   } else {
     subknots = knotsP(subknotsidx);
   }
-  int timer{0};
+  // int timer{0};
   unsigned BDRL{0};
   
   

@@ -54,7 +54,7 @@ void constructnew(const arma::mat &X,
   arma::vec knots_zP_sub = knots_zP.elem(arma::find(knotsidx_zP == (p+1)));
   arma::uvec knotsidx_zP_sub = knotsidx_zP.elem(arma::find(knotsidx_zP == (p+1)));
 
-  double upperknot, maxknot;
+  double upperknot{.0}, maxknot{.0};
   bool flag{false}, knotalive{true};
   if(knots_z_sub.n_elem == 0) {
     upperknot = .0;
@@ -100,7 +100,7 @@ void constructnew(const arma::mat &X,
       // identify which is newknot among knots_zP_sub
       newknotidx = arma::find(arma::abs(knots_zP_sub - arma::join_vert(knots_z_sub, arma::vec(1, arma::fill::zeros))) > .0);
       newknot = knots_zP_sub(newknotidx(0));
-      double bdknot_l = -.01;
+      // double bdknot_l = -.01;
       double bdknot_r = 1.01;
 
       arma::vec Btr_newcol =
