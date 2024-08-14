@@ -3,6 +3,7 @@ library(gambms)
 ## NORMAL: Boston
 ## https://www.cs.toronto.edu/~delve/data/boston/bostonDetail.html
 ## http://lib.stat.cmu.edu/datasets/boston
+## deprecated
 ##########################################################################################
 data("Boston")
 
