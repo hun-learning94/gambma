@@ -1,4 +1,3 @@
-library(gambms)
 ################################################################################
 ## data generation
 ################################################################################
@@ -9,14 +8,14 @@ f_list = list(f1 = function(x) 0.5 * (2*x^5 + 3*x^2 + cos(3*pi*x) - 1),
                                        (x*3 -2.5)^2 * exp(x*3 + 1.5)),
               f3 = function(x) x,
               f4 = function(x) x*0)
-n = 300
+n = 200
 dat = simmat(f_list, -1, 1, n = n, family = "poisson")
 
 
 ################################################################################
 ## fit gambms
 ################################################################################
-maxk = 30
+maxk = 20
 mf = y~ncs(x1, nk=maxk)+ 
   ncs(x2, nk = maxk)  + 
   ncs(x3, nk = maxk) + 
@@ -24,7 +23,7 @@ mf = y~ncs(x1, nk=maxk)+
 
 fit_sim = tryCatch(
   gambms(mf, dat,
-         knotConfig = "FREE",
+         knotConfig = "VS",
          prior = "Intrinsic",
          family = "poisson"),
   error = function(cnd)cnd
@@ -34,6 +33,6 @@ plot(fit_sim)
 plotnumknot(fit_sim)
 plotresiduals(fit_sim)
 
-save(fit_sim, file = "test\\fit_sim.rdata")
+save(fit_sim, file = "test//fit_sim.rdata")
 
 
