@@ -4,7 +4,7 @@
 \alias{print.gambms}
 \title{Title}
 \usage{
-\method{print}{gambms}(x, ...)
+\method{print}{gambms}(x)
 }
 \arguments{
 \item{...}{}

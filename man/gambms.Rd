@@ -8,26 +8,14 @@ gambms(
   fm,
   dat,
   knotConfig = c("EVEN", "VS", "FREE"),
-  prior = c("Beta-prime", "ZS-adapted", "Robust", "Intrinsic", "constant", "Hyper-g",
-    "Uniform", "Hyper-g/n"),
+  prior = c("Unit", "Hyper-g", "Uniform", "Hyper-g/n", "Beta-prime", "ZS-adapted",
+    "Robust", "Intrinsic", "constant", "CH"),
   family = c("poisson", "gaussian", "bernoulli"),
-  link = NULL,
-  g_manual = NA_real_,
-  a_manual = NA_real_,
-  b_manual = NA_real_,
-  s_manual = NA_real_,
-  evenCtrl = list(numMCmodels = 100, enumerate = FALSE, burnIn = 500, mcIter = 500,
-    mcmcIter = 5000),
-  vsCtrl = list(burnIn = 500, mcmcIter = 2000),
-  freeCtrl = list(nu = 50, bir_p = 0.4, dea_p = 0.4, initIter = 200, burnIn = 500,
-    mcmcIter = 2000, thin = NULL),
-  printIter = 200,
-  np = 200,
-  storeFitted = T
+  Ctrl = list()
 )
 }
 \arguments{
-\item{storeFitted}{}
+\item{Ctrl}{}
 }
 \description{
 Title

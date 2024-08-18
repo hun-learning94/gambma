@@ -14,7 +14,6 @@ double rtbeta_cpp(const double &alpha, const double &beta, const double &a, cons
   return R::qbeta(x, alpha, beta, true, false);
 }
 
-
 double rtgamma_cpp(const double &shape, const double &rate, const double &a, const double &b){
   // mean = shape * scale = shape / rate
   double x = R::runif(0.0, 1.0);

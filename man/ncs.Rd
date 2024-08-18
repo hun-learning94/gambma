@@ -4,7 +4,7 @@
 \alias{ncs}
 \title{Title}
 \usage{
-ncs(x, nk = 10, lambda = 0)
+ncs(x, nk = 10, lambda = 0.2)
 }
 \arguments{
 \item{lambda}{}

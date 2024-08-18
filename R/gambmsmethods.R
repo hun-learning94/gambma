@@ -5,14 +5,7 @@
 #' @param knotConfig
 #' @param prior
 #' @param family
-#' @param link
-#' @param g_manual
-#' @param a_manual
-#' @param b_manual
-#' @param s_manual
 #' @param Ctrl
-#' @param np
-#' @param storeFitted
 #'
 #' @return
 #' @export
@@ -24,41 +17,37 @@ gambms = function(fm, dat,
                             "Robust", "Intrinsic", "constant", "CH"),
                   family = c("poisson", "gaussian", "bernoulli"),
                   # params for even, vs, free knots
-                  Ctrl = list(),
+                  Ctrl = list()
                   # evenCtrl = list(numMCmodels = 100,
-                  #                 enumerate = T,
-                  #                 burnIn = 500,
-                  #                 mcIter = 1000,
+                  #                 enumerate = F,
+                  #                 burnIn = 1000,
+                  #                 mcIter = 500,
                   #                 mcmcIter = 10000,
-                  #                 printIter=1000),
+                  #                 printIter = 1000),
                   # vsCtrl = list(burnIn = 500,
-                  #               mcmcIter = 2000),
-                  # freeCtrl = list(nu = 50, 
-                  #                 bir_p = 0.4, 
-                  #                 dea_p = 0.4,
-                  #                 initIter = 200, 
-                  #                 burnIn = 500,
+                  #               mcmcIter = 2000,
+                  #               printIter = 200),
+                  # freeCtrl = list(burnIn = 500,
                   #                 mcmcIter = 2000,
-                  #                 thin = NULL),
-                  linProb = 0.5)
+                  #                 printIter = 200)
+)
 {
-  if(!is.null(Ctrl$printIter)) {
-    printIter = Ctrl$printIter
-  } else {
-    printIter = 200
-  }
   ############################################################
-  ## miscell
-  storeFitted = T # to save the fitted values
+  ############################################################
+  linProb = 0.5
   forceLin = T
-  np = 200 # grid length for prediction
   link = NULL
   glmWeight = NULL
   # params related to manual priors
-  g_manual = NA_real_
-  a_manual = NA_real_ 
+  g_manual = NA_real_ 
+  a_manual = NA_real_
   b_manual = NA_real_ 
   s_manual = NA_real_
+  # grid length for prediction
+  np = 200
+  # to save the fitted values
+  storeFitted = T
+  ############################################################
   ############################################################
   ## model design matrix X, and response y
   if(!inherits(fm, "formula")) stop("Incorrect model fm")
@@ -266,39 +255,41 @@ gambms = function(fm, dat,
     if(is.null(evenCtrl$numMCmodels)) evenCtrl$numMCmodels = 100L
     if(is.null(evenCtrl$enumerate)) evenCtrl$enumerate = F
     if(is.null(evenCtrl$burnIn)) evenCtrl$burnIn = 500L
-    if(is.null(evenCtrl$mcIter)) evenCtrl$mcIter = 1000L
+    if(is.null(evenCtrl$mcIter)) evenCtrl$mcIter = 500L
     if(is.null(evenCtrl$mcmcIter)) evenCtrl$mcmcIter = 10000L
+    if(is.null(evenCtrl$printIter)) evenCtrl$printIter = 1000L
     res = .gambmsEVEN(y, 
-                     glmWeight, 
-                     X_01, 
-                     Xgrid_01,
-                     XLin,
-                     A, 
-                     maxkVec, 
-                     lambdaVec,
-                     familyLinkCode,
-                     priorCode,
-                     a_manual,
-                     b_manual,
-                     s_manual,
-                     g_manual,
-                     evenCtrl$enumerate,
-                     evenCtrl$numMCmodels,
-                     evenCtrl$mcIter,
-                     evenCtrl$mcmcIter + evenCtrl$burnIn,
-                     Rglm, nearPDres, 
-                     storeFitted, forceLin, linProb, printIter)
+                      glmWeight, 
+                      X_01, 
+                      Xgrid_01,
+                      XLin,
+                      A, 
+                      maxkVec, 
+                      lambdaVec,
+                      familyLinkCode,
+                      priorCode,
+                      a_manual,
+                      b_manual,
+                      s_manual,
+                      g_manual,
+                      evenCtrl$enumerate,
+                      evenCtrl$numMCmodels,
+                      evenCtrl$mcIter,
+                      evenCtrl$mcmcIter + evenCtrl$burnIn,
+                      Rglm, nearPDres, 
+                      storeFitted, forceLin, linProb, evenCtrl$printIter)
   } else if(knotConfig == "FREE"){
     freeCtrl = Ctrl
     if(is.null(freeCtrl$nu)) freeCtrl$nu = 50
     if(is.null(freeCtrl$bir_p)) freeCtrl$bir_p = 0.4
     if(is.null(freeCtrl$dea_p)) freeCtrl$dea_p = 0.4
-    if(is.null(freeCtrl$initIter)) freeCtrl$initIter = 200L
+    if(is.null(freeCtrl$initIter)) freeCtrl$initIter = 100L
     if(is.null(freeCtrl$burnIn)) freeCtrl$burnIn = 500L
     if(is.null(freeCtrl$mcmcIter)) freeCtrl$mcmcIter = 2000L
     if(is.null(freeCtrl$thin)) freeCtrl$thin = maxk
-    # if(is.null(freeCtrl$basis)) freeCtrl$basis = 1L
-    if(T){
+    if(is.null(freeCtrl$basis)) freeCtrl$basis = 1L
+    if(is.null(freeCtrl$printIter)) freeCtrl$printIter = 200L
+    if(freeCtrl$basis == 1L){
       res = .gambmsFREE(y, 
                        glmWeight, 
                        X_01, 
@@ -317,14 +308,38 @@ gambms = function(fm, dat,
                        freeCtrl$mcmcIter + freeCtrl$burnIn,
                        freeCtrl$thin,
                        freeCtrl$bir_p, freeCtrl$dea_p, freeCtrl$nu, 
-                       Rglm, nearPDres, storeFitted, forceLin, linProb, printIter)
-    } 
+                       Rglm, nearPDres, storeFitted, forceLin, linProb, 
+                       freeCtrl$printIter)
+    } else if(freeCtrl$basis == 2L){
+      res = .gambmsFREE2(y, 
+                        glmWeight, 
+                        X_01, 
+                        Xgrid_01,
+                        XLin,
+                        A, 
+                        maxkVec, 
+                        lambdaVec,
+                        familyLinkCode,
+                        priorCode,
+                        a_manual,
+                        b_manual,
+                        s_manual,
+                        g_manual,
+                        freeCtrl$initIter,
+                        freeCtrl$mcmcIter + freeCtrl$burnIn,
+                        freeCtrl$thin,
+                        freeCtrl$bir_p, freeCtrl$dea_p, freeCtrl$nu, 
+                        Rglm, nearPDres, storeFitted, forceLin,linProb,  
+                        freeCtrl$printIter)
+    }
+    
   } else if(knotConfig == "VS"){
     vsCtrl = Ctrl
     if(is.null(vsCtrl$burnIn)) vsCtrl$burnIn = 500L
     if(is.null(vsCtrl$mcmcIter)) vsCtrl$mcmcIter = 2000L
-    # if(is.null(vsCtrl$basis)) vsCtrl$basis = 1L
-    if(T){
+    if(is.null(vsCtrl$basis)) vsCtrl$basis = 1L
+    if(is.null(vsCtrl$printIter)) vsCtrl$printIter = 200L
+    if(vsCtrl$basis == 1L){
       res = .gambmsVS(y, 
                      glmWeight, 
                      X_01, 
@@ -340,7 +355,26 @@ gambms = function(fm, dat,
                      s_manual,
                      g_manual,
                      vsCtrl$mcmcIter + vsCtrl$burnIn,
-                     Rglm, nearPDres, F, storeFitted, forceLin, linProb, printIter)
+                     Rglm, nearPDres, F, storeFitted, forceLin, linProb, 
+                     vsCtrl$printIter)
+    } else if (vsCtrl$basis == 2L){
+      res = .gambmsVS2(y, 
+                      glmWeight, 
+                      X_01, 
+                      Xgrid_01,
+                      XLin,
+                      A, 
+                      maxkVec, 
+                      lambdaVec,
+                      familyLinkCode,
+                      priorCode,
+                      a_manual,
+                      b_manual,
+                      s_manual,
+                      g_manual,
+                      vsCtrl$mcmcIter + vsCtrl$burnIn,
+                      Rglm, nearPDres, F, storeFitted, forceLin, linProb, 
+                      vsCtrl$printIter)
     }
   } else {stop("invalid knotConfig")}
   print("cpp done")
@@ -386,16 +420,14 @@ gambms = function(fm, dat,
     out$mcmcIter = vsCtrl$mcmcIter
     out$knots = res$KNOTS[getIdx,]
     
-    if(T){
-      tmp = list()
-      start = out$pLin + 2
-      for(i in 1:out$p){
-        end = start + out$maxk[i]-1
-        tmp[[i]] = out$knots[, start:end]
-        start = end + 2
-      }
-      out$numknots = sapply(tmp, function(x) rowSums(x))
+    tmp = list()
+    start = out$pLin + 2
+    for(i in 1:out$p){
+      end = start + out$maxk[i]-1
+      tmp[[i]] = out$knots[, start:end]
+      start = end + 2
     }
+    out$numknots = sapply(tmp, function(x) rowSums(x))
     
   } else if (knotConfig == "FREE"){
     getIdx = freeCtrl$burnIn + 1:freeCtrl$mcmcIter

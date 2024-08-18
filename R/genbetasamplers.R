@@ -3,37 +3,6 @@
 #' @param n
 #' @param a
 #' @param b
-#' @param s
-#'
-#' @return
-#' @export
-#'
-#' @examples
-rCH = function(n, a, b, s){
-  return(.rCH(n, 100, a, b, s))
-}
-
-#' Title
-#'
-#' @param n
-#' @param a
-#' @param b
-#' @param x
-#' @param z
-#'
-#' @return
-#' @export
-#'
-#' @examples
-rGH = function(n, a, b, x, z){
-  return(.rGH(n, 100, a, b, x, z))
-}
-
-#' Title
-#'
-#' @param n
-#' @param a
-#' @param b
 #' @param z
 #' @param s
 #' @param nu
@@ -70,22 +39,4 @@ dtCCH = function(u, a, b, z, s, nu, theta, log=F){
            z*log1p(x) - .logPhi1(b, z, a+b, snu, x/(x+1)) - lbeta(a,b))*nu
   if(!log) res = exp(res)
   return(res)
-}
-
-#' Title
-#'
-#' @param n
-#' @param a
-#' @param b
-#' @param z
-#' @param w
-#' @param x
-#' @param y
-#'
-#' @return
-#' @export
-#'
-#' @examples
-rAH = function(n, a, b, z, w, x, y){
-  return(.rAH(n, 100, a, b, z, w, x, y))
 }

@@ -6,14 +6,14 @@
 
 //[[Rcpp::export(.log1F1)]]
 double log1F1_cpp(const double &aa, const double &rr, const double &xx);
-
-//[[Rcpp::export(.log2F1)]]  
+  
+  //[[Rcpp::export(.log2F1)]]
 double log2F1_cpp(const double &bb, const double &aa, const double &rr, const double &xx);
 
 //[[Rcpp::export(.logPhi1)]]
 double logPhi1_cpp(const double &aa, const double &bb, const double &rr, const double &xx, const double &yy);
 
-//[[Rcpp::export(.F1)]]
+//[[Rcpp::export(.logF1)]]
 double logF1_cpp(const double &aa, const double &bb, const double &bbp, const double &rr, const double &xx, const double &yy);
 
 #endif // __specialFunctions__

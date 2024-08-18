@@ -4,7 +4,9 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
 #include "gambmsFREE.h"
+#include "gambmsFREE2.h"
 #include "gambmsVS.h"
+#include "gambmsVS2.h"
 #include "gambmsEVEN.h"
 
 ////////////////////////////////////////////////////////////////////////////////////

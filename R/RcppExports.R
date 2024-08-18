@@ -9,8 +9,12 @@
     .Call(`_gambms_CRAD_test_cpp`, testX, X_lin, CRADlist)
 }
 
-etastart <- function(glmWeight, y, familyLink) {
-    .Call(`_gambms_etastart`, glmWeight, y, familyLink)
+.CRAD2 <- function(X, X_lin, knots, knotsidx, NS, bdmargin) {
+    .Call(`_gambms_CRAD_cpp2`, X, X_lin, knots, knotsidx, NS, bdmargin)
+}
+
+.CRAD_test2 <- function(testX, X_lin, CRADlist) {
+    .Call(`_gambms_CRAD_test_cpp2`, testX, X_lin, CRADlist)
 }
 
 .gambmsEVEN <- function(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, enumerate, numMCcandidate, MCiter, MCMCiter, Rglm, nearPDres, storeFit, forceLin, linProb, printiter) {
@@ -21,24 +25,20 @@ etastart <- function(glmWeight, y, familyLink) {
     .Call(`_gambms_gambmsFREE`, y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, initS, MCMCiter, thin, bir_p, dea_p, nu, Rglm, nearPDres, storeFit, forceLin, linProb, printiter)
 }
 
+.gambmsFREE2 <- function(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, initS, MCMCiter, thin, bir_p, dea_p, nu, Rglm, nearPDres, storeFit, forceLin, linProb, printiter) {
+    .Call(`_gambms_gambmsFREE2`, y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, initS, MCMCiter, thin, bir_p, dea_p, nu, Rglm, nearPDres, storeFit, forceLin, linProb, printiter)
+}
+
 .gambmsVS <- function(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, forceLin, linProb, printiter) {
     .Call(`_gambms_gambmsVS`, y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, forceLin, linProb, printiter)
 }
 
-.rCH <- function(nsamp, burnin, aa, bb, ss) {
-    .Call(`_gambms_rCH_cpp`, nsamp, burnin, aa, bb, ss)
-}
-
-.rGH <- function(nsamp, burnin, aa, bb, xx, zz) {
-    .Call(`_gambms_rGH_cpp`, nsamp, burnin, aa, bb, xx, zz)
+.gambmsVS2 <- function(y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, forceLin, linProb, printiter) {
+    .Call(`_gambms_gambmsVS2`, y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, forceLin, linProb, printiter)
 }
 
 .rtCCH <- function(nsamp, burnin, aa, bb, zz, ss, nu, theta) {
     .Call(`_gambms_rtCCH_cpp`, nsamp, burnin, aa, bb, zz, ss, nu, theta)
-}
-
-.rAH <- function(nsamp, burnin, aa, bb, zz, ww, xx, yy) {
-    .Call(`_gambms_rAPL_cpp`, nsamp, burnin, aa, bb, zz, ww, xx, yy)
 }
 
 .log1F1 <- function(aa, rr, xx) {
@@ -53,7 +53,7 @@ etastart <- function(glmWeight, y, familyLink) {
     .Call(`_gambms_logPhi1_cpp`, aa, bb, rr, xx, yy)
 }
 
-.F1 <- function(aa, bb, bbp, rr, xx, yy) {
+.logF1 <- function(aa, bb, bbp, rr, xx, yy) {
     .Call(`_gambms_logF1_cpp`, aa, bb, bbp, rr, xx, yy)
 }
 

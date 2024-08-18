@@ -4,7 +4,7 @@
 \alias{summary.gambms}
 \title{Title}
 \usage{
-\method{summary}{gambms}(object, ...)
+\method{summary}{gambms}(x)
 }
 \arguments{
 \item{...}{}

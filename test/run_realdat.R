@@ -3,24 +3,23 @@ library(gambms)
 ## NORMAL: Boston
 ## https://www.cs.toronto.edu/~delve/data/boston/bostonDetail.html
 ## http://lib.stat.cmu.edu/datasets/boston
-## deprecated
 ##########################################################################################
 data("Boston")
 
-maxk=15; lambda = .1
+maxk=15; 
 mf = log(medv) ~ chas +
-  ncs(crim, nk = maxk, lambda=lambda) +
-  ncs(zn, nk = maxk, lambda=lambda) +
-  ncs(indus, nk = maxk, lambda=lambda) +
-  ncs(nox, nk = maxk, lambda=lambda) +
-  ncs(rm, nk = maxk, lambda=lambda) +
-  ncs(age, nk = maxk, lambda=lambda) +
-  ncs(dis, nk = maxk, lambda=lambda) +
-  ncs(rad, nk = maxk, lambda=lambda) +
-  ncs(tax, nk = maxk, lambda=lambda) +
-  ncs(ptratio, nk = maxk, lambda=lambda) +
-  ncs(black, nk = maxk, lambda=lambda) +
-  ncs(lstat, nk = maxk, lambda=lambda)
+  ncs(crim, nk = maxk) +
+  ncs(zn, nk = maxk) +
+  ncs(indus, nk = maxk) +
+  ncs(nox, nk = maxk) +
+  ncs(rm, nk = maxk) +
+  ncs(age, nk = maxk) +
+  ncs(dis, nk = maxk) +
+  ncs(rad, nk = maxk) +
+  ncs(tax, nk = maxk) +
+  ncs(ptratio, nk = maxk) +
+  ncs(black, nk = maxk) +
+  ncs(lstat, nk = maxk)
 
 fit_Boston =  gambms(mf, Boston,
                  knotConfig = "EVEN",

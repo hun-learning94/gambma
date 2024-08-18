@@ -3,7 +3,6 @@
 \docType{package}
 \name{gambms-package}
 \alias{gambms-package}
-\alias{_PACKAGE}
 \title{gambms: Model Selection-based Estimation for Generalized Additive Models with Mixtures of g-priors}
 \description{
 This package provides RCpp implementations of estimation methods for generalized additive models based on Bayesian model selection with mixtures of g-priors.
