@@ -50,93 +50,59 @@ f_list = list(f1 = function(x) 0.5 * (2*x^5 + 3*x^2 + cos(3*pi*x) - 1),
               f3 = function(x) x,
               f4 = function(x) x*0)
 n = 200
-dat = simmat(f_list, -1, 1, n = n, family = "gaussian")
+dat = simmat(f_list, -1, 1, n = n, family = "poisson")
 
-maxk = 20
-mf = y~ncs(x1, nk=maxk)+ ncs(x2, nk = maxk)  + ncs(x3, nk = maxk)
+mf = y~ncs(x1, nk = 20)+ 
+  ncs(x2, nk = 20)  + 
+  ncs(x3, nk = 20) + 
+  ncs(x4, nk = 20)
+
 fit_sim = tryCatch(
   gambms(mf, dat,
          knotConfig = "FREE",
          prior = "Intrinsic",
-         family = "poisson",
-         printIter = 500),
+         family = "poisson"),
   error = function(cnd)cnd
 )
+
 plot(fit_sim)
 ```
-```{r, fig.height=3, echo=F}
+```{r, fig.height=4, echo=F}
 library(gambms)
 load("test/fit_sim.rdata")
 plot(fit_sim)
 ```
 
-### Real data 1) Boston Housing Prices (Gaussian, EVEN-knot)
-```{r, eval=F}
-data("Boston")
-maxk=15; lambda = .1
-mf = log(medv) ~ chas +
-  ncs(crim, nk = maxk, lambda=lambda) +
-  ncs(zn, nk = maxk, lambda=lambda) +
-  ncs(indus, nk = maxk, lambda=lambda) +
-  ncs(nox, nk = maxk, lambda=lambda) +
-  ncs(rm, nk = maxk, lambda=lambda) +
-  ncs(age, nk = maxk, lambda=lambda) +
-  ncs(dis, nk = maxk, lambda=lambda) +
-  ncs(rad, nk = maxk, lambda=lambda) +
-  ncs(tax, nk = maxk, lambda=lambda) +
-  ncs(ptratio, nk = maxk, lambda=lambda) +
-  ncs(black, nk = maxk, lambda=lambda) +
-  ncs(lstat, nk = maxk, lambda=lambda)
-fit =  gambms(mf, Boston,
-                 knotConfig = "EVEN",
-                 prior = "Intrinsic",
-                 family = "gaussian")
-summary(fit)
-plot(fit)
-plotnumknot(fit)
-plotresiduals(fit)
-```
-```{r, fig.height=3, echo=F}
-library(gambms)
-load("test/fit_Boston.rdata")
-summary(fit_Boston)
-plot(fit_Boston)
-plotnumknot(fit_Boston)
-```
-```{r, fig.height=4, echo=F}
-plotresiduals(fit_Boston)
-```
-
-### Real data 2) Pima Indian Diabetes (Bernoulli, VS-knot)
+### Pima Indian Diabetes (Bernoulli, VS-knot)
 ```{r, eval=F}
 data("Pima")
-maxk=10; lambda = .1
-mf = diabetes ~ 
-  ncs(pregnant, nk = maxk, lambda = lambda) +
-  ncs(glucose, nk = maxk, lambda = lambda) +
-  ncs(pressure, nk = maxk, lambda = lambda) +
-  ncs(triceps, nk = 5, lambda = lambda) +
-  ncs(mass, nk = maxk, lambda = lambda) +
-  ncs(pedigree, nk = maxk, lambda = lambda) +
-  ncs(age, nk = 5, lambda = lambda)
-fit =  gambms(mf, Pima,
-         knotConfig = "VS",
-         prior = "Intrinsic",
-         family = "bernoulli",
-         Ctrl = list(mcmcIter = 5000))
-
-summary(fit)
-plot(fit)
-plotnumknot(fit)
-plotresiduals(fit)
+mf = diabetes ~
+  ncs(pregnant, nk = 20) +
+  ncs(glucose, nk = 20) +
+  ncs(pressure, nk = 20) +
+  ncs(triceps, nk = 20) +
+  ncs(mass, nk = 20) +
+  ncs(pedigree, nk = 20) +
+  ncs(age, nk = 20)
+fit_Pima =  gambms(mf, Pima,
+                   knotConfig = "VS",
+                   prior = "Intrinsic",
+                   family = "bernoulli",
+                   Ctrl = list(mcmcIter = 2000))
+summary(fit_Pima)
+plot(fit_Pima)
+plotnumknot(fit_Pima)
+plotresiduals(fit_Pima)
 ```
-```{r, fig.height=3, echo=F}
+
+```{r, fig.height=4, echo=F}
 library(gambms)
 load("test/fit_Pima.rdata")
 summary(fit_Pima)
 plot(fit_Pima)
 plotnumknot(fit_Pima)
 ```
+
 ```{r, fig.height=4, echo=F}
 plotresiduals(fit_Pima)
 ```

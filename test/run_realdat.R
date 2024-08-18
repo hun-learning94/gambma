@@ -26,5 +26,5 @@ plot(fit_Pima)
 plotnumknot(fit_Pima)
 plotresiduals(fit_Pima)
 
-# save(fit_Pima, "test//fit_Pima.rdata")
+save(fit_Pima, file="test//fit_Pima.rdata")
 

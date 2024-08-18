@@ -32,6 +32,6 @@ plot(fit_sim)
 plotnumknot(fit_sim)
 plotresiduals(fit_sim)
 
-# save(fit_sim, file = "test//fit_sim.rdata")
+save(fit_sim, file = "test//fit_sim.rdata")
 
 
