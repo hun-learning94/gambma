@@ -2,6 +2,7 @@
 #define __gambmsEVEN__
 #include <RcppArmadillo.h>
 
+//[[Rcpp::export(.gambmsEVEN)]]
 Rcpp::List gambmsEVEN(const arma::vec &y,
                       const double &glmWeight,
                       const arma::mat &X,

@@ -2,6 +2,7 @@
 #define __gambmsFREE__
 #include <RcppArmadillo.h>
 
+//[[Rcpp::export(.gambmsFREE)]]
 Rcpp::List gambmsFREE(const arma::vec &y,
                       const double &glmWeight,
                       const arma::mat &X,

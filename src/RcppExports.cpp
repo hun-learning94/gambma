@@ -11,33 +11,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// CRADNS_1d_cpp
-arma::mat CRADNS_1d_cpp(const arma::vec& x, const arma::vec& knot, bool knotalive, double bdmargin);
-RcppExport SEXP _gambms_CRADNS_1d_cpp(SEXP xSEXP, SEXP knotSEXP, SEXP knotaliveSEXP, SEXP bdmarginSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type knot(knotSEXP);
-    Rcpp::traits::input_parameter< bool >::type knotalive(knotaliveSEXP);
-    Rcpp::traits::input_parameter< double >::type bdmargin(bdmarginSEXP);
-    rcpp_result_gen = Rcpp::wrap(CRADNS_1d_cpp(x, knot, knotalive, bdmargin));
-    return rcpp_result_gen;
-END_RCPP
-}
-// CRAD_1d_cpp
-arma::mat CRAD_1d_cpp(const arma::vec& x, const arma::vec& knot, bool knotalive);
-RcppExport SEXP _gambms_CRAD_1d_cpp(SEXP xSEXP, SEXP knotSEXP, SEXP knotaliveSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type knot(knotSEXP);
-    Rcpp::traits::input_parameter< bool >::type knotalive(knotaliveSEXP);
-    rcpp_result_gen = Rcpp::wrap(CRAD_1d_cpp(x, knot, knotalive));
-    return rcpp_result_gen;
-END_RCPP
-}
 // CRAD_cpp
 Rcpp::List CRAD_cpp(const arma::mat& X, const arma::mat& X_lin, const arma::vec& knots, const arma::uvec& knotsidx, bool NS, double bdmargin);
 RcppExport SEXP _gambms_CRAD_cpp(SEXP XSEXP, SEXP X_linSEXP, SEXP knotsSEXP, SEXP knotsidxSEXP, SEXP NSSEXP, SEXP bdmarginSEXP) {
@@ -182,34 +155,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rtbeta_cpp
-double rtbeta_cpp(const double& alpha, const double& beta, const double& a, const double& b);
-RcppExport SEXP _gambms_rtbeta_cpp(SEXP alphaSEXP, SEXP betaSEXP, SEXP aSEXP, SEXP bSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const double& >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
-    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(rtbeta_cpp(alpha, beta, a, b));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rtgamma_cpp
-double rtgamma_cpp(const double& shape, const double& rate, const double& a, const double& b);
-RcppExport SEXP _gambms_rtgamma_cpp(SEXP shapeSEXP, SEXP rateSEXP, SEXP aSEXP, SEXP bSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const double& >::type shape(shapeSEXP);
-    Rcpp::traits::input_parameter< const double& >::type rate(rateSEXP);
-    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
-    Rcpp::traits::input_parameter< const double& >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(rtgamma_cpp(shape, rate, a, b));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rCH_cpp
 arma::vec rCH_cpp(int nsamp, int burnin, const double& aa, const double& bb, const double& ss);
 RcppExport SEXP _gambms_rCH_cpp(SEXP nsampSEXP, SEXP burninSEXP, SEXP aaSEXP, SEXP bbSEXP, SEXP ssSEXP) {
@@ -337,16 +282,12 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_gambms_CRADNS_1d_cpp", (DL_FUNC) &_gambms_CRADNS_1d_cpp, 4},
-    {"_gambms_CRAD_1d_cpp", (DL_FUNC) &_gambms_CRAD_1d_cpp, 3},
     {"_gambms_CRAD_cpp", (DL_FUNC) &_gambms_CRAD_cpp, 6},
     {"_gambms_CRAD_test_cpp", (DL_FUNC) &_gambms_CRAD_test_cpp, 3},
     {"_gambms_etastart", (DL_FUNC) &_gambms_etastart, 3},
     {"_gambms_gambmsEVEN", (DL_FUNC) &_gambms_gambmsEVEN, 24},
     {"_gambms_gambmsFREE", (DL_FUNC) &_gambms_gambmsFREE, 26},
     {"_gambms_gambmsVS", (DL_FUNC) &_gambms_gambmsVS, 22},
-    {"_gambms_rtbeta_cpp", (DL_FUNC) &_gambms_rtbeta_cpp, 4},
-    {"_gambms_rtgamma_cpp", (DL_FUNC) &_gambms_rtgamma_cpp, 4},
     {"_gambms_rCH_cpp", (DL_FUNC) &_gambms_rCH_cpp, 5},
     {"_gambms_rGH_cpp", (DL_FUNC) &_gambms_rGH_cpp, 6},
     {"_gambms_rtCCH_cpp", (DL_FUNC) &_gambms_rtCCH_cpp, 8},

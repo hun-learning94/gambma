@@ -4,7 +4,6 @@
 // [[Rcpp::plugins(cpp11)]]
 #include "gambmsSupportFunctions.h"
 
-//[[Rcpp::export]]
 Rcpp::List gambmsEVEN(const arma::vec &y,
                       const double &glmWeight,
                       const arma::mat &X,
@@ -313,9 +312,9 @@ Rcpp::List gambmsEVEN(const arma::vec &y,
         // 2. coin toss to make a jump or not
         o = lpyProp - lpyCurr;
         if(std::isnan(o) != 0){
-          Rcpp::Rcout << "nan occured \n";
-          Rcpp::Rcout << "lpyProp : " << lpyProp << '\n';
-          Rcpp::Rcout << "lpyCurr : " << lpyCurr << '\n';
+          // Rcpp::Rcout << "nan occured \n";
+          // Rcpp::Rcout << "lpyProp : " << lpyProp << '\n';
+          // Rcpp::Rcout << "lpyCurr : " << lpyCurr << '\n';
           Rcpp::stop("\n");
         }
         // Rcpp::Rcout << "o calculated \n";

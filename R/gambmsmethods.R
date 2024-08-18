@@ -23,13 +23,6 @@ gambms = function(fm, dat,
                   prior = c("Unit", "Hyper-g", "Uniform", "Hyper-g/n", "Beta-prime", "ZS-adapted",
                             "Robust", "Intrinsic", "constant", "CH"),
                   family = c("poisson", "gaussian", "bernoulli"),
-                  link = NULL,
-                  glmWeight = NULL, 
-                  # params related to manual priors
-                  g_manual = NA_real_, 
-                  a_manual = NA_real_, 
-                  b_manual = NA_real_, 
-                  s_manual = NA_real_,
                   # params for even, vs, free knots
                   Ctrl = list(),
                   # evenCtrl = list(numMCmodels = 100,
@@ -47,12 +40,7 @@ gambms = function(fm, dat,
                   #                 burnIn = 500,
                   #                 mcmcIter = 2000,
                   #                 thin = NULL),
-                  # grid length for prediction
-                  np = 200,
-                  forceLin = T,
-                  linProb = 0.5,
-                  # to save the fitted values
-                  storeFitted = T)
+                  linProb = 0.5)
 {
   if(!is.null(Ctrl$printIter)) {
     printIter = Ctrl$printIter
@@ -60,6 +48,17 @@ gambms = function(fm, dat,
     printIter = 200
   }
   ############################################################
+  ## miscell
+  storeFitted = T # to save the fitted values
+  forceLin = T
+  np = 200 # grid length for prediction
+  link = NULL
+  glmWeight = NULL
+  # params related to manual priors
+  g_manual = NA_real_
+  a_manual = NA_real_ 
+  b_manual = NA_real_ 
+  s_manual = NA_real_
   ############################################################
   ## model design matrix X, and response y
   if(!inherits(fm, "formula")) stop("Incorrect model fm")
@@ -269,7 +268,7 @@ gambms = function(fm, dat,
     if(is.null(evenCtrl$burnIn)) evenCtrl$burnIn = 500L
     if(is.null(evenCtrl$mcIter)) evenCtrl$mcIter = 1000L
     if(is.null(evenCtrl$mcmcIter)) evenCtrl$mcmcIter = 10000L
-    res = gambmsEVEN(y, 
+    res = .gambmsEVEN(y, 
                      glmWeight, 
                      X_01, 
                      Xgrid_01,
@@ -300,7 +299,7 @@ gambms = function(fm, dat,
     if(is.null(freeCtrl$thin)) freeCtrl$thin = maxk
     # if(is.null(freeCtrl$basis)) freeCtrl$basis = 1L
     if(T){
-      res = gambmsFREE(y, 
+      res = .gambmsFREE(y, 
                        glmWeight, 
                        X_01, 
                        Xgrid_01,
@@ -326,7 +325,7 @@ gambms = function(fm, dat,
     if(is.null(vsCtrl$mcmcIter)) vsCtrl$mcmcIter = 2000L
     # if(is.null(vsCtrl$basis)) vsCtrl$basis = 1L
     if(T){
-      res = gambmsVS(y, 
+      res = .gambmsVS(y, 
                      glmWeight, 
                      X_01, 
                      Xgrid_01,

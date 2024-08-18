@@ -7,7 +7,6 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
 
-// //[[Rcpp::export]]
 // void maximums() 
 // {
 //   Rcpp::Rcout << "type\tlowest()\tmin()\t\tmax()\n\n"
@@ -33,7 +32,7 @@
 //             << std::numeric_limits<double>::max() << '\n';
 // }
 
-//[[Rcpp::export]]
+
 double log1F1_cpp(const double &aa, const double &rr, const double &xx){
   double lb{0.0001}, ub{1.0-0.0001};
   std::vector<double> tt = std_linspace(lb, ub, 50);
@@ -54,7 +53,6 @@ double log1F1_cpp(const double &aa, const double &rr, const double &xx){
   return Q;
 }
 
-//[[Rcpp::export]]
 double log2F1_cpp(const double &bb, const double &aa, const double &rr, const double &xx){
   double lb{0.0001}, ub{1.0-0.0001};
   std::vector<double> tt = std_linspace(lb, ub, 50);
@@ -75,7 +73,6 @@ double log2F1_cpp(const double &bb, const double &aa, const double &rr, const do
   return Q;
 }
 
-//[[Rcpp::export]]
 double logPhi1_cpp(const double &aa, const double &bb, const double &rr, const double &xx, const double &yy){
   double lb{0.0001}, ub{1.0-0.0001};
   std::vector<double> tt = std_linspace(lb, ub, 50);
@@ -94,7 +91,6 @@ double logPhi1_cpp(const double &aa, const double &bb, const double &rr, const d
   return (std::log(boost::math::quadrature::gauss_kronrod<double, 15>::integrate(f2, lb, ub, 5, 1e-14, &error)) + adjV);
 }
 
-//[[Rcpp::export]]
 double logF1_cpp(const double &aa, const double &bb, const double &bbp, const double &rr, const double &xx, const double &yy){
   double lb{0.0001}, ub{1.0-0.0001};
   std::vector<double> tt = std_linspace(lb, ub, 50);
