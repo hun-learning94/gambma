@@ -115,15 +115,15 @@ plotresiduals(fit_Pima)
     #> ------------------------------------------------------------- 
     #> Marginal probability that sm is linear: 
     #> pregnant  glucose pressure  triceps     mass pedigree      age 
-    #>    0.900    0.980    0.980    0.970    0.700    0.930    0.066 
+    #>    0.910    0.980    0.980    0.970    0.690    0.930    0.075 
     #> ------------------------------------------------------------- 
     #> Linear coefficients:
     #>                mean  median      sd z_score lower95 upper95
-    #> (Intercept) -1.0794 -1.0750  0.1440 -7.4943 -1.3721 -0.8054
+    #> (Intercept) -1.0770 -1.0748  0.1452 -7.4184 -1.3726 -0.7993
     #> ------------------------------------------------------------ 
     #> Sampled g values:
     #>       mean   median       sd  lower95  upper95
-    #> g  62.2392  59.7952  16.2000  41.1786 104.7524
+    #> g  62.4084  59.8361  16.9437  40.9775 104.7476
     #> -------------------------------------------------------------
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-6-2.png" width="100%" />
@@ -153,58 +153,63 @@ lines(u, dtCCH(u, a, b, z, s, nu, theta), col="#008631", lwd=2, lty=2)
 
 ## System environment
 
-I built the package and conducted the simulations under the following
+I built the package and executed the above examples under the following
 environment:
 
 ``` r
 sessioninfo::session_info()
-#> - Session info ---------------------------------------------------------------
+#> ─ Session info ───────────────────────────────────────────────────────────────
 #>  setting  value
-#>  version  R version 4.1.2 (2021-11-01)
-#>  os       Windows 10 x64 (build 22631)
-#>  system   x86_64, mingw32
-#>  ui       RTerm
+#>  version  R version 4.3.3 (2024-02-29)
+#>  os       Fedora Linux 39 (Server Edition)
+#>  system   x86_64, linux-gnu
+#>  ui       X11
 #>  language (EN)
-#>  collate  English_United States.1252
-#>  ctype    English_United States.1252
-#>  tz       Asia/Seoul
+#>  collate  en_US.UTF-8
+#>  ctype    en_US.UTF-8
+#>  tz       America/New_York
 #>  date     2024-08-18
-#>  pandoc   3.1.11 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)
+#>  pandoc   3.1.11 @ /usr/lib/rstudio-server/bin/quarto/bin/tools/x86_64/ (via rmarkdown)
 #> 
-#> - Packages -------------------------------------------------------------------
+#> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package     * version    date (UTC) lib source
-#>  cli           3.6.2      2023-12-11 [2] CRAN (R 4.1.2)
-#>  digest        0.6.35     2024-03-11 [2] CRAN (R 4.1.2)
-#>  evaluate      0.24.0     2024-06-10 [2] CRAN (R 4.1.2)
-#>  fastmap       1.2.0      2024-05-15 [2] CRAN (R 4.1.2)
+#>  cli           3.6.3      2024-06-21 [4] CRAN (R 4.3.3)
+#>  digest        0.6.36     2024-06-23 [4] CRAN (R 4.3.3)
+#>  evaluate      0.24.0     2024-06-10 [4] CRAN (R 4.3.3)
+#>  fastmap       1.2.0      2024-05-15 [4] CRAN (R 4.3.3)
 #>  gambms      * 0.0.0.9000 2024-08-18 [1] local
-#>  highr         0.11       2024-05-26 [2] CRAN (R 4.1.2)
-#>  htmltools     0.5.8.1    2024-04-04 [2] CRAN (R 4.1.2)
-#>  knitr         1.47       2024-05-29 [2] CRAN (R 4.1.2)
-#>  Rcpp          1.0.12     2024-01-09 [2] CRAN (R 4.1.2)
-#>  rlang         1.1.4      2024-06-04 [2] CRAN (R 4.1.2)
-#>  rmarkdown     2.27       2024-05-17 [2] CRAN (R 4.1.2)
-#>  rstudioapi    0.16.0     2024-03-24 [2] CRAN (R 4.1.2)
-#>  sessioninfo   1.2.2      2021-12-06 [2] CRAN (R 4.1.3)
-#>  xfun          0.44       2024-05-15 [2] CRAN (R 4.1.2)
-#>  yaml          2.3.8      2023-12-11 [2] CRAN (R 4.1.2)
+#>  highr         0.11       2024-05-26 [4] CRAN (R 4.3.3)
+#>  htmltools     0.5.8      2024-03-25 [3] CRAN (R 4.3.2)
+#>  knitr         1.48       2024-07-07 [4] CRAN (R 4.3.3)
+#>  Rcpp          1.0.13     2024-07-17 [3] CRAN (R 4.3.3)
+#>  rlang         1.1.4      2024-06-04 [4] CRAN (R 4.3.3)
+#>  rmarkdown     2.28       2024-08-17 [4] CRAN (R 4.3.3)
+#>  rstudioapi    0.16.0     2024-03-24 [3] CRAN (R 4.3.2)
+#>  sessioninfo   1.2.2      2021-12-06 [4] CRAN (R 4.3.1)
+#>  xfun          0.47       2024-08-17 [2] CRAN (R 4.3.3)
+#>  yaml          2.3.10     2024-07-26 [4] CRAN (R 4.3.3)
 #> 
-#>  [1] C:/Users/hunlearning/AppData/Local/Temp/RtmpiOKgYf/temp_libpath62d827772698
-#>  [2] C:/Users/hunlearning/Documents/R/win-library/4.1
-#>  [3] C:/Program Files/R/R-4.1.2/library
+#>  [1] /tmp/Rtmp2dNjrV/temp_libpath27d001c681ebd
+#>  [2] /home/g/gk149/R/x86_64-redhat-linux-gnu-library/4.3
+#>  [3] /usr/local/lib/R/library
+#>  [4] /usr/lib64/R/library
+#>  [5] /usr/share/R/library
 #> 
-#> ------------------------------------------------------------------------------
+#> ──────────────────────────────────────────────────────────────────────────────
 ```
 
 ``` r
 system("gcc -v")
-#> Using built-in specs.
-#> COLLECT_GCC=C:\PROGRA~1\mingw64\bin\gcc.exe
-#> COLLECT_LTO_WRAPPER=C:/PROGRA~1/mingw64/bin/../libexec/gcc/x86_64-w64-mingw32/8.1.0/lto-wrapper.exe
-#> Target: x86_64-w64-mingw32
-#> Configured with: ../../../src/gcc-8.1.0/configure --host=x86_64-w64-mingw32 --build=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --prefix=/mingw64 --with-sysroot=/c/mingw810/x86_64-810-posix-seh-rt_v6-rev0/mingw64 --enable-shared --enable-static --disable-multilib --enable-languages=c,c++,fortran,lto --enable-libstdcxx-time=yes --enable-threads=posix --enable-libgomp --enable-libatomic --enable-lto --enable-graphite --enable-checking=release --enable-fully-dynamic-string --enable-version-specific-runtime-libs --disable-libstdcxx-pch --disable-libstdcxx-debug --enable-bootstrap --disable-rpath --disable-win32-registry --disable-nls --disable-werror --disable-symvers --with-gnu-as --with-gnu-ld --with-arch=nocona --with-tune=core2 --with-libiconv --with-system-zlib --with-gmp=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpfr=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-mpc=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-isl=/c/mingw810/prerequisites/x86_64-w64-mingw32-static --with-pkgversion='x86_64-posix-seh-rev0, Built by MinGW-W64 project' --with-bugurl=https://sourceforge.net/projects/mingw-w64 CFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-posix-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CXXFLAGS='-O2 -pipe -fno-ident -I/c/mingw810/x86_64-810-posix-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' CPPFLAGS=' -I/c/mingw810/x86_64-810-posix-seh-rt_v6-rev0/mingw64/opt/include -I/c/mingw810/prerequisites/x86_64-zlib-static/include -I/c/mingw810/prerequisites/x86_64-w64-mingw32-static/include' LDFLAGS='-pipe -fno-ident -L/c/mingw810/x86_64-810-posix-seh-rt_v6-rev0/mingw64/opt/lib -L/c/mingw810/prerequisites/x86_64-zlib-static/lib -L/c/mingw810/prerequisites/x86_64-w64-mingw32-static/lib '
-#> Thread model: posix
-#> gcc version 8.1.0 (x86_64-posix-seh-rev0, Built by MinGW-W64 project) 
+#>Using built-in specs.
+#>COLLECT_GCC=gcc
+#>COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/13/lto-wrapper
+#>OFFLOAD_TARGET_NAMES=nvptx-none
+#>OFFLOAD_TARGET_DEFAULT=1
+#>Target: x86_64-redhat-linux
+#>Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-13.3.1-20240522/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none --without-cuda-driver --enable-offload-defaulted --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1
+#>Thread model: posix
+#>Supported LTO compression algorithms: zlib zstd
+#>gcc version 13.3.1 20240522 (Red Hat 13.3.1-1) (GCC)
 ```
 
 <!-- What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so: -->
