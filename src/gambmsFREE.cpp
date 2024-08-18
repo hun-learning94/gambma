@@ -201,17 +201,17 @@ Rcpp::List gambmsFREE(const arma::vec &y,
           continue;
         }
         
-        if(std::isnan(r2QmProp)) Rcpp::stop("fuck you");
+        if(std::isnan(r2QmProp)) Rcpp::stop("r2Qm nan");
         
         // 2. coin toss to make a jump or not
         o = (lpyProp - lpyCurr) + (std::log(PtoC) - std::log(CtoP));
         if(std::isnan(o) != 0){
-          Rcpp::Rcout << "nan occured \n";
-          Rcpp::Rcout << "lpy_prop : " << lpyProp << '\n';
-          Rcpp::Rcout << "lpy_curr : " << lpyCurr << '\n';
-          Rcpp::Rcout << "log(PtoC) : " << std::log(PtoC) << '\n';
-          Rcpp::Rcout << "log(CtoP) : " << std::log(CtoP) << '\n';
-          // num_failed++;
+          // Rcpp::Rcout << "nan occured \n";
+          // Rcpp::Rcout << "lpy_prop : " << lpyProp << '\n';
+          // Rcpp::Rcout << "lpy_curr : " << lpyCurr << '\n';
+          // Rcpp::Rcout << "log(PtoC) : " << std::log(PtoC) << '\n';
+          // Rcpp::Rcout << "log(CtoP) : " << std::log(CtoP) << '\n';
+          // // num_failed++;
           continue;
         }
         
