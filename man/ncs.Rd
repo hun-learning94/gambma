@@ -2,13 +2,21 @@
 % Please edit documentation in R/ncs.R
 \name{ncs}
 \alias{ncs}
-\title{Title}
+\title{A function to construct a natural cubic spline basis function}
 \usage{
 ncs(x, nk = 10)
 }
 \arguments{
-\item{nk}{}
+\item{x}{variable}
+
+\item{nk}{integer; number of knots for each variable}
+}
+\value{
+ncsSmoothSpec object
 }
 \description{
-Title
+for internal usage
+}
+\seealso{
+\code{\link[=gambms]{gambms()}}
 }

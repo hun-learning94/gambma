@@ -752,13 +752,13 @@ plot.gambms = function(x,
   return(invisible(PREDtable))
 }
 
-#' Title
+#' The function that plots a posterior distribution of the number of knots
 #'
-#' @param x
-#' @param n_row
+#' @param x gambms object;
+#' @param n_row integer; a number of rows in a plot
 #' @param ...
 #'
-#' @return
+#' @return none
 #' @export
 #'
 #' @examples
@@ -766,13 +766,13 @@ plotnumknot = function(x, n_row, ...){
   UseMethod("plotnumknot")
 }
 
-#' Title
+#' The function that plots a posterior distribution of the number of knots
 #'
-#' @param x
-#' @param n_row
+#' @param x gambms object;
+#' @param n_row integer; a number of rows in a plot
 #' @param ...
 #'
-#' @return
+#' @return none
 #' @export
 #'
 #' @examples
@@ -801,12 +801,12 @@ plotnumknot.gambms = function(x, n_row, ...){
 }
 
 
-#' Title
+#' The function to sample fitted values from the posterior predictive distribution
 #'
-#' @param object
+#' @param object gambms object;
 #' @param ...
 #'
-#' @return
+#' @return a matrix of fitted values
 #' @export
 #'
 #' @examples
@@ -829,15 +829,15 @@ fitted.gambms = function(object, ...){
   return(postPred)
 }
 
-#' Title
+#' The function that plots a (binned) residuals of posterior predictive samples
 #'
-#' @param fit
-#' @param nReplications
-#' @param nBins
-#' @param ylim
+#' @param fit gambms object;
+#' @param nReplications integer; a number of a batch of posterior predictive samples to draw
+#' @param nBins integer; a length of a bin
+#' @param ylim numeric vector; user-specified ylim
 #' @param ...
 #'
-#' @return
+#' @return none
 #' @export
 #'
 #' @examples
@@ -846,15 +846,15 @@ plotresiduals = function(fit, nReplications, nBins, ylim, ...){
 }
 
 
-#' Title
+#' The function that plots a (binned) residuals of posterior predictive samples
 #'
-#' @param fit
-#' @param nReplications
-#' @param nBins
-#' @param ylim
+#' @param fit gambms object;
+#' @param nReplications integer; a number of a batch of posterior predictive samples to draw
+#' @param nBins integer; a length of a bin
+#' @param ylim numeric vector; user-specified ylim
 #' @param ...
 #'
-#' @return
+#' @return none
 #' @export
 #'
 #' @examples

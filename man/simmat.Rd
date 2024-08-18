@@ -2,7 +2,7 @@
 % Please edit documentation in R/simmat.R
 \name{simmat}
 \alias{simmat}
-\title{Title}
+\title{A function to simulate data frame}
 \usage{
 simmat(
   flist,
@@ -17,8 +17,27 @@ simmat(
 )
 }
 \arguments{
-\item{beta}{}
+\item{flist}{list; a list of true (uncentered) functions}
+
+\item{xmin}{real; support of x}
+
+\item{xmax}{real; support of x}
+
+\item{n}{integer; number of samples}
+
+\item{family}{character; "bernoulli", "poisson", "gaussian"}
+
+\item{link}{character; "log", "logit", "identity"}
+
+\item{sig}{real; standard deviation of gaussian}
+
+\item{intercept}{real; intercept}
+
+\item{beta}{numeric vector; coefficients of linear terms, if included}
+}
+\value{
+data frame
 }
 \description{
-Title
+A function to simulate data frame
 }

@@ -1,11 +1,15 @@
-#' Title
+#' A function to construct a natural cubic spline basis function
 #'
-#' @param x
-#' @param nk
+#' @description
+#' for internal usage 
 #'
-#' @return
+#' @param x variable
+#' @param nk integer; number of knots for each variable
+#'
+#' @return ncsSmoothSpec object
 #' @export
-#'
+#' @seealso [gambms()]
+#' 
 #' @examples
 ncs = function(x, nk = 10){
   term = as.character(substitute(x))

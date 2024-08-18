@@ -2,13 +2,24 @@
 % Please edit documentation in R/gambmsmethods.R
 \name{plotresiduals.gambms}
 \alias{plotresiduals.gambms}
-\title{Title}
+\title{The function that plots a (binned) residuals of posterior predictive samples}
 \usage{
 \method{plotresiduals}{gambms}(fit, nReplications = 10, nBins = NULL, ylim, ...)
 }
 \arguments{
+\item{fit}{gambms object;}
+
+\item{nReplications}{integer; a number of a batch of posterior predictive samples to draw}
+
+\item{nBins}{integer; a length of a bin}
+
+\item{ylim}{numeric vector; user-specified ylim}
+
 \item{...}{}
 }
+\value{
+none
+}
 \description{
-Title
+The function that plots a (binned) residuals of posterior predictive samples
 }

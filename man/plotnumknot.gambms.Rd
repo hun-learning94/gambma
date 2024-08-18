@@ -2,13 +2,20 @@
 % Please edit documentation in R/gambmsmethods.R
 \name{plotnumknot.gambms}
 \alias{plotnumknot.gambms}
-\title{Title}
+\title{The function that plots a posterior distribution of the number of knots}
 \usage{
 \method{plotnumknot}{gambms}(x, n_row, ...)
 }
 \arguments{
+\item{x}{gambms object;}
+
+\item{n_row}{integer; a number of rows in a plot}
+
 \item{...}{}
 }
+\value{
+none
+}
 \description{
-Title
+The function that plots a posterior distribution of the number of knots
 }

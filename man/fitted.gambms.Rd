@@ -2,13 +2,18 @@
 % Please edit documentation in R/gambmsmethods.R
 \name{fitted.gambms}
 \alias{fitted.gambms}
-\title{Title}
+\title{The function to sample fitted values from the posterior predictive distribution}
 \usage{
 \method{fitted}{gambms}(object, ...)
 }
 \arguments{
+\item{object}{gambms object;}
+
 \item{...}{}
 }
+\value{
+a matrix of fitted values
+}
 \description{
-Title
+The function to sample fitted values from the posterior predictive distribution
 }

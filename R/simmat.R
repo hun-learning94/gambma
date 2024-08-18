@@ -1,16 +1,16 @@
-#' Title
+#' A function to simulate data frame
 #'
-#' @param flist
-#' @param xmin
-#' @param xmax
-#' @param n
-#' @param family
-#' @param link
-#' @param sig
-#' @param intercept
-#' @param beta
+#' @param flist list; a list of true (uncentered) functions
+#' @param xmin real; support of x
+#' @param xmax real; support of x
+#' @param n integer; number of samples
+#' @param family character; "bernoulli", "poisson", "gaussian"
+#' @param link character; "log", "logit", "identity"
+#' @param sig real; standard deviation of gaussian
+#' @param intercept real; intercept
+#' @param beta numeric vector; coefficients of linear terms, if included
 #'
-#' @return
+#' @return data frame
 #' @export
 #'
 #' @examples
