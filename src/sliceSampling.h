@@ -27,7 +27,6 @@ arma::vec rGH_cpp(int nsamp, int burnin,
 // p(v) \propto v^(a-1) (1-v)^(b-1) (1 + x v)^(-z) exp(-tilde_s u)
 void rCCH_void(double& v_, double& t_, double& l_,double& m_,
                const double& aa, const double& bb, const double& zz, const double& ss, const double& xx);
-//[[Rcpp::export(.rtCCH)]]
 arma::vec rtCCH_cpp(int nsamp, int burnin,
                     const double& aa, const double& bb, const double& zz, const double& ss, const double &nu, const double& theta);
 

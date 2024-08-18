@@ -239,24 +239,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rtCCH_cpp
-arma::vec rtCCH_cpp(int nsamp, int burnin, const double& aa, const double& bb, const double& zz, const double& ss, const double& nu, const double& theta);
-RcppExport SEXP _gambms_rtCCH_cpp(SEXP nsampSEXP, SEXP burninSEXP, SEXP aaSEXP, SEXP bbSEXP, SEXP zzSEXP, SEXP ssSEXP, SEXP nuSEXP, SEXP thetaSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nsamp(nsampSEXP);
-    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
-    Rcpp::traits::input_parameter< const double& >::type aa(aaSEXP);
-    Rcpp::traits::input_parameter< const double& >::type bb(bbSEXP);
-    Rcpp::traits::input_parameter< const double& >::type zz(zzSEXP);
-    Rcpp::traits::input_parameter< const double& >::type ss(ssSEXP);
-    Rcpp::traits::input_parameter< const double& >::type nu(nuSEXP);
-    Rcpp::traits::input_parameter< const double& >::type theta(thetaSEXP);
-    rcpp_result_gen = Rcpp::wrap(rtCCH_cpp(nsamp, burnin, aa, bb, zz, ss, nu, theta));
-    return rcpp_result_gen;
-END_RCPP
-}
 // log1F1_cpp
 double log1F1_cpp(const double& aa, const double& rr, const double& xx);
 RcppExport SEXP _gambms_log1F1_cpp(SEXP aaSEXP, SEXP rrSEXP, SEXP xxSEXP) {
@@ -326,7 +308,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_gambms_gambmsFREE2", (DL_FUNC) &_gambms_gambmsFREE2, 26},
     {"_gambms_gambmsVS", (DL_FUNC) &_gambms_gambmsVS, 22},
     {"_gambms_gambmsVS2", (DL_FUNC) &_gambms_gambmsVS2, 22},
-    {"_gambms_rtCCH_cpp", (DL_FUNC) &_gambms_rtCCH_cpp, 8},
     {"_gambms_log1F1_cpp", (DL_FUNC) &_gambms_log1F1_cpp, 3},
     {"_gambms_log2F1_cpp", (DL_FUNC) &_gambms_log2F1_cpp, 4},
     {"_gambms_logPhi1_cpp", (DL_FUNC) &_gambms_logPhi1_cpp, 5},

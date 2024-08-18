@@ -107,18 +107,6 @@ plotnumknot(fit_Pima)
 plotresiduals(fit_Pima)
 ```
 
-## Bonus: sampling from tCCH distribution
-The truncated Compound Confluent Hypergeometric (tCCH) distribution is a variant of generalized beta distribution tuned with a total of $5$ parameters. We provide a straightforward sampling algorithm based on slice sampling, essentially Gibbs, for this and other variants including Gaussian Hypergeometric, Confluent Hypergeometric, and Appell Hypergeometric distribution. Read the paper in `docs` for more details.
-```{r}
-a=5; b=1.2; z=37; s=-26; nu = 1; theta = 0.36
-u = seq(0, 1/nu, len=1e4)
-samp = rtCCH(1e6, a, b, z, s, nu, theta)
-hist(samp, nclass=100, probability = T,
-     xlab= "u", ylab = "Density", col="#00c04b", border="white",
-     main = paste0("tCCH(", a,", ", b,", ", z,", ", s,", ", nu,", ", theta, ")"))
-lines(u, dtCCH(u, a, b, z, s, nu, theta), col="#008631", lwd=2, lty=2)
-```
-
 
 ## System environment
 I built the package and executed the above examples under the following environment:

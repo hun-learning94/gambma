@@ -25,10 +25,10 @@ gambms(
 
 \item{family}{character; one of "poisson", "gaussian" and "bernoulli"}
 
-\item{Ctrl}{list; control parameters for MCMC. Ctrl$burnIn is the number of burn-in iterations, Ctrl$mcmcIter is the number of MCMC iterations and Ctrl$printIter determines how often the MCMC iterations would be printed in the console output.}
+\item{Ctrl}{list; control parameters for MCMC. Ctrl$burnIn is the number of burn-in iterations and Ctrl$mcmcIter is the number of MCMC iterations.}
 }
 \value{
-A list containing objects required to summarize and visualize the function fit.
+S3 object named gambms containing objects required to summarize and visualize the function fit.
 }
 \description{
 This function fits a generalized additive partial linear model (GAPLM) using Bayesian model selection.

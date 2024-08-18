@@ -37,10 +37,6 @@
     .Call(`_gambms_gambmsVS2`, y, glmWeight, X, X_pr, XLin, offset, maxk, Lambda, familyLink, gprior, aa, bb, ss, gg, MCMCiter, Rglm, nearPDres, getmeMAP, storeFit, forceLin, linProb, printiter)
 }
 
-.rtCCH <- function(nsamp, burnin, aa, bb, zz, ss, nu, theta) {
-    .Call(`_gambms_rtCCH_cpp`, nsamp, burnin, aa, bb, zz, ss, nu, theta)
-}
-
 .log1F1 <- function(aa, rr, xx) {
     .Call(`_gambms_log1F1_cpp`, aa, rr, xx)
 }

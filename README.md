@@ -130,27 +130,6 @@ plotresiduals(fit_Pima)
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
-## Bonus: sampling from tCCH distribution
-
-The truncated Compound Confluent Hypergeometric (tCCH) distribution is a
-variant of generalized beta distribution tuned with a total of $5$
-parameters. We provide a straightforward sampling algorithm based on
-slice sampling, essentially Gibbs, for this and other variants including
-Gaussian Hypergeometric, Confluent Hypergeometric, and Appell
-Hypergeometric distribution. Read the paper in `docs` for more details.
-
-``` r
-a=5; b=1.2; z=37; s=-26; nu = 1; theta = 0.36
-u = seq(0, 1/nu, len=1e4)
-samp = rtCCH(1e6, a, b, z, s, nu, theta)
-hist(samp, nclass=100, probability = T,
-     xlab= "u", ylab = "Density", col="#00c04b", border="white",
-     main = paste0("tCCH(", a,", ", b,", ", z,", ", s,", ", nu,", ", theta, ")"))
-lines(u, dtCCH(u, a, b, z, s, nu, theta), col="#008631", lwd=2, lty=2)
-```
-
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
-
 ## System environment
 
 I built the package and executed the above examples under the following
@@ -189,7 +168,7 @@ sessioninfo::session_info()
 #>  xfun          0.47       2024-08-17 [2] CRAN (R 4.3.3)
 #>  yaml          2.3.10     2024-07-26 [4] CRAN (R 4.3.3)
 #> 
-#>  [1] /tmp/Rtmp2dNjrV/temp_libpath27d001c681ebd
+#>  [1] /tmp/RtmptxjdeZ/temp_libpath2990594b194918
 #>  [2] /home/g/gk149/R/x86_64-redhat-linux-gnu-library/4.3
 #>  [3] /usr/local/lib/R/library
 #>  [4] /usr/lib64/R/library

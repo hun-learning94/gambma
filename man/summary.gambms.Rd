@@ -2,13 +2,18 @@
 % Please edit documentation in R/gambmsmethods.R
 \name{summary.gambms}
 \alias{summary.gambms}
-\title{Title}
+\title{The function that summarizes a gambms object}
 \usage{
 \method{summary}{gambms}(x)
 }
 \arguments{
+\item{x}{gambms S3 object;}
+
 \item{...}{}
 }
+\value{
+none
+}
 \description{
-Title
+The function that summarizes a gambms object
 }

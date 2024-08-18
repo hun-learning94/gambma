@@ -2,13 +2,18 @@
 % Please edit documentation in R/gambmsmethods.R
 \name{print.gambms}
 \alias{print.gambms}
-\title{Title}
+\title{The function that prints a gambms object}
 \usage{
 \method{print}{gambms}(x)
 }
 \arguments{
+\item{x}{gambms S3 object;}
+
 \item{...}{}
 }
+\value{
+none
+}
 \description{
-Title
+The function that prints a gambms object
 }

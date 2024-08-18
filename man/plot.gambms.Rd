@@ -2,13 +2,22 @@
 % Please edit documentation in R/gambmsmethods.R
 \name{plot.gambms}
 \alias{plot.gambms}
-\title{Title}
+\title{The function that plots a gambms object}
 \usage{
 \method{plot}{gambms}(x, alpha = 0.025, ylim = NULL, n_row = NULL, ...)
 }
 \arguments{
+\item{alpha}{real; a real number determining width of credible interval}
+
+\item{ylim}{real vector; user specified ylim for all the plots}
+
+\item{n_row}{integer; user speicifed number of rows of the plots}
+
 \item{...}{}
 }
+\value{
+a data frame of pointwise predicted function fits and credible intervals
+}
 \description{
-Title
+The function that plots a gambms object
 }
