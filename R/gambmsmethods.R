@@ -287,7 +287,7 @@ gambms = function(fm, dat,
     if(is.null(freeCtrl$initIter)) freeCtrl$initIter = 100L
     if(is.null(freeCtrl$burnIn)) freeCtrl$burnIn = 500L
     if(is.null(freeCtrl$mcmcIter)) freeCtrl$mcmcIter = 1000L
-    if(is.null(freeCtrl$thin)) freeCtrl$thin = maxk
+    if(is.null(freeCtrl$thin)) freeCtrl$thin = maxkVec[1]
     if(is.null(freeCtrl$basis)) freeCtrl$basis = 1L
     if(is.null(freeCtrl$printIter)) freeCtrl$printIter = 200L
     if(freeCtrl$basis == 1L){
