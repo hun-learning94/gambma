@@ -23,7 +23,7 @@ mf = y~ncs(x1, nk=maxk)+
 
 fit_sim = tryCatch(
   gambms(mf, dat,
-         knotConfig = "VS",
+         knotConfig = "FREE",
          prior = "Intrinsic",
          family = "poisson"),
   error = function(cnd)cnd
@@ -33,6 +33,6 @@ plot(fit_sim)
 plotnumknot(fit_sim)
 plotresiduals(fit_sim)
 
-save(fit_sim, file = "test//fit_sim.rdata")
+# save(fit_sim, file = "test//fit_sim.rdata")
 
 
