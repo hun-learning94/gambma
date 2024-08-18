@@ -46,7 +46,9 @@ void knotPrior(double &comp3,
                const arma::uvec &betaidx,
                const arma::uvec &maxk,
                const arma::vec &Lambda,
-               const bool& isgrid);
+               const bool& isgrid,
+               const bool& forceLin,
+               double& linProb);
 
 ////////////////////////////////////////////////////////////////////////////////
 // MATX_TO_LPY
@@ -81,6 +83,8 @@ void MATX_TO_LPY(double &lpy,
                  const double &gg,
                  const Rcpp::Function &Rglm,
                  const bool& isgrid,
+                 const bool& forceLin,
+                 double &linProb,
                  const arma::uvec &maxk);
 
 void KNOT_TO_LPY(const arma::uvec &knotnums,
@@ -108,6 +112,8 @@ void KNOT_TO_LPY(const arma::uvec &knotnums,
                  const double &gg,
                  const Rcpp::Function &Rglm,
                  const bool& isgrid,
+                 const bool& forceLin,
+                 double &linProb,
                  const arma::uvec &maxk);
 
 

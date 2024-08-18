@@ -138,9 +138,11 @@ void knotPrior(double &comp3,
                const arma::uvec &betaidx,
                const arma::uvec &maxk,
                const arma::vec &Lambda,
-               const bool& isgrid){
+               const bool& isgrid,
+               const bool& forceLin,
+               double& linProb){
   comp3 = 0.0; 
-  double knotnums{.0};
+  double knotnums{.0}, tmp{.0};
   bool LambdaPos = (arma::accu(Lambda) > 0);
   for(unsigned i{0}; i<Lambda.n_elem; i++){
     knotnums = (arma::accu(betaidx == (i+1)) - 1);
@@ -150,9 +152,23 @@ void knotPrior(double &comp3,
         (std::lgamma(maxk(i) + 1.0) - std::lgamma(maxk(i) - knotnums + 1.0) - 
         std::lgamma(knotnums + 1.0));
       }
-    if(LambdaPos) {
-      // comp3 += knotnums * std::log(Lambda(i)) - Lambda(i) - std::lgamma(knotnums + 1); // posson
-      comp3 += std::log(Lambda(i)) + knotnums*std::log(1.0-Lambda(i)); // geometric
+    
+    if(forceLin){
+      if(knotnums == 0){
+        comp3 += std::log(linProb);
+      } else {
+        for(unsigned k{1}; k <= maxk(i); k++){
+          tmp +=  std::exp(std::log(Lambda(i)) + k*std::log(1.0-Lambda(i)));
+        }
+        comp3 += std::log(1.0 - linProb) - std::log(tmp) +
+          std::log(Lambda(i)) + knotnums*std::log(1.0-Lambda(i));
+      }
+      
+    } else {
+      if(LambdaPos) {
+        // comp3 += knotnums * std::log(Lambda(i)) - Lambda(i) - std::lgamma(knotnums + 1); // posson
+        comp3 += std::log(Lambda(i)) + knotnums*std::log(1.0-Lambda(i)); // geometric
+      }
     }
   }
 }
@@ -192,6 +208,8 @@ void MATX_TO_LPY(double &lpy,
                  const double &gg,
                  const Rcpp::Function &Rglm,
                  const bool& isgrid,
+                 const bool& forceLin,
+                 double &linProb,
                  const arma::uvec &maxk){
   
   // arma::vec knots;
@@ -230,7 +248,7 @@ void MATX_TO_LPY(double &lpy,
       y, B_tr.cols(1, B_tr.n_cols-1), offset, EtaHat, JAlphaHat, r2Qm,
       familyLink, gprior, aa, bb, ss, gg);
   // Rcpp::Rcout << "trying knotPrior \n";
-  knotPrior(comp3, betaidx, maxk, Lambda, isgrid);
+  knotPrior(comp3, betaidx, maxk, Lambda, isgrid, forceLin, linProb);
   lpy += comp3;
   // Rcpp::Rcout << "lpy done \n";
   
@@ -262,6 +280,8 @@ void KNOT_TO_LPY(const arma::uvec &knotnums,
                  const double &gg,
                  const Rcpp::Function &Rglm,
                  const bool& isgrid,
+                 const bool& forceLin,
+                 double &linProb,
                  const arma::uvec &maxk){
   
   bool NS{true};
@@ -277,7 +297,7 @@ void KNOT_TO_LPY(const arma::uvec &knotnums,
   MATX_TO_LPY(lpy, comp1, comp2, comp3, r2Qm, mle, EtaHat, rootJBetaHat,
               y, glmWeight, B_tr, betaidx, offset, Lambda, 
               familyLink, gprior, aa, bb, ss, gg,
-              Rglm, isgrid, maxk);
+              Rglm, isgrid, forceLin, linProb, maxk);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

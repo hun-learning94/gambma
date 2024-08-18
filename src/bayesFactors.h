@@ -46,6 +46,7 @@ double getR2QM(const unsigned &familyLink,
 
 ////////////////////////////////////////////////////////////////////////////////
 // initial starting point of IRLS algorithm
+//[[Rcpp::export]]
 arma::vec etastart(const double &glmWeight, 
                    const arma::mat& y,
                    const unsigned& familyLink);

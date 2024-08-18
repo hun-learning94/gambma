@@ -6,6 +6,7 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::plugins(cpp11)]]
 
+//[[Rcpp::export]]
 double rtbeta_cpp(const double &alpha, const double &beta, const double &a, const double &b){
   double x = R::runif(0.0, 1.0);
   double Fa = R::pbeta(a, alpha, beta, true, false);
@@ -14,6 +15,7 @@ double rtbeta_cpp(const double &alpha, const double &beta, const double &a, cons
   return R::qbeta(x, alpha, beta, true, false);
 }
 
+//[[Rcpp::export]]
 double rtgamma_cpp(const double &shape, const double &rate, const double &a, const double &b){
   // mean = shape * scale = shape / rate
   double x = R::runif(0.0, 1.0);
@@ -24,7 +26,7 @@ double rtgamma_cpp(const double &shape, const double &rate, const double &a, con
   return R::qgamma(x, shape, scale, true, false);
 }
 
-void rCH_void(double& v_, double& l_,
+void rCH_void(double& v_, double& l_, 
               const double& aa, const double& bb, const double& ss){
   l_ = std::exp(std::log(R::runif(0.0, 1.0)) - ss*v_);
   double lb, ub;
@@ -38,11 +40,12 @@ void rCH_void(double& v_, double& l_,
   v_ = rtbeta_cpp(aa, bb, lb, ub);
 }
 
+//[[Rcpp::export]]
 arma::vec rCH_cpp(int nsamp, int burnin,
                   const double& aa, const double& bb, const double& ss){
   if(!(aa>0)) Rcpp::stop("Must be a > 0");
   if(!(bb>0)) Rcpp::stop("Must be b > 0");
-
+  
   int S = nsamp + burnin;
   arma::vec RES(S);
   double v_{0.1}, l_{0.1};
@@ -73,14 +76,15 @@ void rGH_void(double& v_, double& t_, double& l_,
     lb = std::max(-std::log(l_)/(xx*t_), 0.0);
   }
   v_ = rtbeta_cpp(aa, bb, lb, ub);
-}
+} 
 
+//[[Rcpp::export]]
 arma::vec rGH_cpp(int nsamp, int burnin,
                   const double& aa, const double& bb, const double& xx, const double& zz){
   if(!(aa>0)) Rcpp::stop("Must be a > 0");
   if(!(bb>0)) Rcpp::stop("Must be b > 0");
   if(!(zz>0)) Rcpp::stop("Must be z > 0");
-
+  
   int S = nsamp + burnin;
   arma::vec RES(S);
   double v_{0.1}, l_{0.1}, t_{0.1};
@@ -118,15 +122,16 @@ void rCCH_void(double& v_, double& t_, double& l_,double& m_,
     ub = 1.0;
   }
   v_ = rtbeta_cpp(aa, bb, lb, ub);
-}
+} 
 
+//[[Rcpp::export]]
 arma::vec rtCCH_cpp(int nsamp, int burnin,
                     const double& aa, const double& bb, const double& zz, const double& ss, const double &nu, const double& theta){
   if(!(aa>0)) Rcpp::stop("Must be a > 0");
   if(!(bb>0)) Rcpp::stop("Must be b > 0");
   if(!(theta>0)) Rcpp::stop("Must be theta > 0");
   if(!(zz>0)) Rcpp::stop("Must be z > 0");
-
+  
   int S = nsamp + burnin;
   arma::vec RES(S);
   double v_{0.1}, l_{0.1}, t_{0.1},m_{0.1};
@@ -151,7 +156,7 @@ void rAPL_void(double& v_, double& t_, double& q_, double& l_,double& m_,
     lb = std::max(0.0, -std::log(l_)/(xx*v_));
   }
   t_ = rtgamma_cpp(zz, 1.0, lb, ub);
-
+  
   if(xx>0){
     ub = -std::log(m_)/(yy*v_);
     lb = 0.0;
@@ -160,7 +165,7 @@ void rAPL_void(double& v_, double& t_, double& q_, double& l_,double& m_,
     lb = std::max(0.0, -std::log(m_)/(yy*v_));
   }
   q_ = rtgamma_cpp(ww, 1.0, lb, ub);
-
+  
   if((xx>0) & (yy >0)){
     ub = std::min(1.0, std::min(-std::log(l_)/(xx*t_), -std::log(m_)/(yy*q_)));
     lb = 0.0;
@@ -175,8 +180,9 @@ void rAPL_void(double& v_, double& t_, double& q_, double& l_,double& m_,
     lb = std::max(0.0, -std::log(l_)/(xx*t_));
   }
   v_ = rtbeta_cpp(aa, bb, lb, ub);
-}
+} 
 
+//[[Rcpp::export]]
 arma::vec rAPL_cpp(int nsamp, int burnin,
                    const double& aa, const double& bb, const double& zz, const double& ww, const double& xx, const double& yy){
   if(!(aa>0)) Rcpp::stop("Must be a > 0");
@@ -185,7 +191,7 @@ arma::vec rAPL_cpp(int nsamp, int burnin,
   if(!(yy>0)) Rcpp::stop("Must be y > -1");
   if(!(zz>0)) Rcpp::stop("Must be z > 0");
   if(!(ww>0)) Rcpp::stop("Must be w > 0");
-
+  
   int S = nsamp + burnin;
   arma::vec RES(S);
   double v_{0.1}, l_{0.1}, t_{0.1},m_{0.1}, q_{0.1};

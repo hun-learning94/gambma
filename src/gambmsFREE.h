@@ -2,14 +2,13 @@
 #define __gambmsFREE__
 #include <RcppArmadillo.h>
 
-//[[Rcpp::export(.gambmsFREE)]]
 Rcpp::List gambmsFREE(const arma::vec &y,
                       const double &glmWeight,
                       const arma::mat &X,
                       const arma::mat &X_pr,
                       const arma::mat &XLin,
                       const arma::vec &offset,
-                      const arma::uvec &maxk,
+                      const arma::uvec maxk,
                       const arma::vec &Lambda,
                       const unsigned& familyLink,
                       const unsigned& gprior,
@@ -24,6 +23,8 @@ Rcpp::List gambmsFREE(const arma::vec &y,
                       const Rcpp::Function &Rglm,
                       const Rcpp::Function &nearPDres,
                       const bool& storeFit,
+                      const bool& forceLin,
+                      double & linProb,
                       unsigned printiter);
 
 #endif // __gambmsFREE__
