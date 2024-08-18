@@ -4,10 +4,10 @@
 \alias{ncs}
 \title{Title}
 \usage{
-ncs(x, nk = 10, lambda = 0.2)
+ncs(x, nk = 10)
 }
 \arguments{
-\item{lambda}{}
+\item{nk}{}
 }
 \description{
 Title

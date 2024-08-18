@@ -25,7 +25,7 @@ gambms = function(fm, dat,
                   #                 mcmcIter = 10000,
                   #                 printIter = 1000),
                   # vsCtrl = list(burnIn = 500,
-                  #               mcmcIter = 2000,
+                  #               mcmcIter = 1000,
                   #               printIter = 200),
                   # freeCtrl = list(burnIn = 500,
                   #                 mcmcIter = 2000,
@@ -59,7 +59,8 @@ gambms = function(fm, dat,
   smoothTermsSpec = list()
   for(i in seq_along(smoothTerms)){ smoothTermsSpec[[i]] = try(eval(parse(text = smoothTerms[i]))) }
   maxkVec = sapply(smoothTermsSpec, function(x) x$nk)
-  lambdaVec = sapply(smoothTermsSpec, function(x) x$lambdaVec)
+  # lambdaVec = sapply(smoothTermsSpec, function(x) x$lambdaVec)
+  lambdaVec = rep(0.2, length(maxkVec))
   smoothTermsName = sapply(smoothTermsSpec, function(x) x$term)
   fakeFormula = ""; j=1
   for(i in seq_along(allTerms)){
@@ -285,7 +286,7 @@ gambms = function(fm, dat,
     if(is.null(freeCtrl$dea_p)) freeCtrl$dea_p = 0.4
     if(is.null(freeCtrl$initIter)) freeCtrl$initIter = 100L
     if(is.null(freeCtrl$burnIn)) freeCtrl$burnIn = 500L
-    if(is.null(freeCtrl$mcmcIter)) freeCtrl$mcmcIter = 2000L
+    if(is.null(freeCtrl$mcmcIter)) freeCtrl$mcmcIter = 1000L
     if(is.null(freeCtrl$thin)) freeCtrl$thin = maxk
     if(is.null(freeCtrl$basis)) freeCtrl$basis = 1L
     if(is.null(freeCtrl$printIter)) freeCtrl$printIter = 200L
@@ -336,7 +337,7 @@ gambms = function(fm, dat,
   } else if(knotConfig == "VS"){
     vsCtrl = Ctrl
     if(is.null(vsCtrl$burnIn)) vsCtrl$burnIn = 500L
-    if(is.null(vsCtrl$mcmcIter)) vsCtrl$mcmcIter = 2000L
+    if(is.null(vsCtrl$mcmcIter)) vsCtrl$mcmcIter = 1000L
     if(is.null(vsCtrl$basis)) vsCtrl$basis = 1L
     if(is.null(vsCtrl$printIter)) vsCtrl$printIter = 200L
     if(vsCtrl$basis == 1L){
