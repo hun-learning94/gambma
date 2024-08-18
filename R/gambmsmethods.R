@@ -1,16 +1,73 @@
-#' Title
+#' Bayesian model selection for generalized additive partial linear models
 #'
-#' @param fm
-#' @param dat
-#' @param knotConfig
-#' @param prior
-#' @param family
-#' @param Ctrl
+#' @description
+#' This function fits a generalized additive partial linear model (GAPLM) using Bayesian model selection. 
 #'
-#' @return
-#' @export
+#' @param fm formula specifying a model to be fitted.
+#' @param dat data frame;
+#' @param knotConfig character; one of "EVEN", "VS", or "FREE"
+#' @param prior character; one of mixtures of g-priors including "Unit", "Hyper-g", "Uniform", "Hyper-g/n", "Beta-prime", "ZS-adapted", "Robust", "Intrinsic", "constant" and "CH"
+#' @param family character; one of "poisson", "gaussian" and "bernoulli"
+#' @param Ctrl list; control parameters for MCMC. Ctrl$burnIn is the number of burn-in iterations and Ctrl$mcmcIter is the number of MCMC iterations.
+#'
+#' @return 
+#' S3 object named gambms containing objects required to summarize and visualize the function fit.
 #'
 #' @examples
+#' ## simualted data
+#' set.seed(1)
+#' f_list = list(f1 = function(x) 0.5 * (2*x^5 + 3*x^2 + cos(3*pi*x) - 1),
+#'               f2 = function(x) 0.75*(0.0035 * (x*3 + 1.5)^3 + (x > -0.5 & x < 0.85) * 
+#'                                        0.07 *sin(1.7*pi*(x*3 + 1.5)^2 / 3.2)*
+#'                                        (x*3 -2.5)^2 * exp(x*3 + 1.5)),
+#'               f3 = function(x) x,
+#'               f4 = function(x) x*0)
+#' n = 200
+#' dat = simmat(f_list, -1, 1, n = n, family = "poisson")
+#' mf = y~ncs(x1, nk = 20)+ 
+#'   ncs(x2, nk = 20)  + 
+#'   ncs(x3, nk = 20) + 
+#'   ncs(x4, nk = 20)
+#' 
+#' fit_sim = tryCatch(
+#'   gambms(mf, dat,
+#'          knotConfig = "FREE",
+#'          prior = "Intrinsic",
+#'          family = "poisson"),
+#'   error = function(cnd)cnd
+#' )
+#' 
+#' summary(fit_sim)
+#' plot(fit_sim)
+#' plotnumknot(fit_sim)
+#' plotresiduals(fit_sim)
+#' 
+#' ## Real data
+#' data("Pima")
+#' 
+#' mf = diabetes ~
+#'   ncs(pregnant, nk = 20) +
+#'   ncs(glucose, nk = 20) +
+#'   ncs(pressure, nk = 20) +
+#'   ncs(triceps, nk = 20) +
+#'   ncs(mass, nk = 20) +
+#'   ncs(pedigree, nk = 20) +
+#'   ncs(age, nk = 20)
+#' 
+#' fit_Pima =  gambms(mf, Pima,
+#'                    knotConfig = "VS",
+#'                    prior = "Intrinsic",
+#'                    family = "bernoulli",
+#'                    Ctrl = list(mcmcIter = 2000))
+#' 
+#' summary(fit_Pima)
+#' plot(fit_Pima)
+#' plotnumknot(fit_Pima)
+#' plotresiduals(fit_Pima)
+#' 
+#' @seealso [ncs()], [summary.gambms()], [plot.gambms()], [plotnumknot.gambms()], [plotresiduals.gambms()]
+#' 
+#' @export
 gambms = function(fm, dat, 
                   knotConfig = c("EVEN", "VS", "FREE"),
                   prior = c("Unit", "Hyper-g", "Uniform", "Hyper-g/n", "Beta-prime", "ZS-adapted",
@@ -18,18 +75,12 @@ gambms = function(fm, dat,
                   family = c("poisson", "gaussian", "bernoulli"),
                   # params for even, vs, free knots
                   Ctrl = list()
-                  # evenCtrl = list(numMCmodels = 100,
-                  #                 enumerate = F,
-                  #                 burnIn = 1000,
-                  #                 mcIter = 500,
-                  #                 mcmcIter = 10000,
-                  #                 printIter = 1000),
+                  # evenCtrl = list(burnIn = 1000,
+                  #                 mcmcIter = 10000),
                   # vsCtrl = list(burnIn = 500,
-                  #               mcmcIter = 1000,
-                  #               printIter = 200),
+                  #               mcmcIter = 1000),
                   # freeCtrl = list(burnIn = 500,
-                  #                 mcmcIter = 2000,
-                  #                 printIter = 200)
+                  #                 mcmcIter = 2000)
 )
 {
   ############################################################
@@ -471,12 +522,12 @@ gambms = function(fm, dat,
   return(out)
 }
 
-#' Title
+#' The function that prints a gambms object
 #'
-#' @param x
+#' @param x gambms S3 object;
 #' @param ...
 #'
-#' @return
+#' @return none
 #' @export
 #'
 #' @examples
@@ -500,12 +551,12 @@ print.gambms = function(x){
   cat("------------------------------------------------------------ \n")
 }
 
-#' Title
+#' The function that summarizes a gambms object
 #'
-#' @param object
+#' @param x gambms S3 object;
 #' @param ...
 #'
-#' @return
+#' @return none
 #' @export
 #'
 #' @examples
@@ -587,15 +638,15 @@ summary.gambms = function(x){
 }
 
 
-#' Title
+#' The function that plots a gambms object
 #'
 #' @param x
-#' @param alpha
-#' @param ylim
-#' @param n_row
+#' @param alpha real; a real number determining width of credible interval
+#' @param ylim real vector; user specified ylim for all the plots
+#' @param n_row integer; user speicifed number of rows of the plots
 #' @param ...
 #'
-#' @return
+#' @return a data frame of pointwise predicted function fits and credible intervals
 #' @export
 #'
 #' @examples

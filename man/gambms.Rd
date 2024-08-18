@@ -2,7 +2,7 @@
 % Please edit documentation in R/gambmsmethods.R
 \name{gambms}
 \alias{gambms}
-\title{Title}
+\title{Bayesian model selection for generalized additive partial linear models}
 \usage{
 gambms(
   fm,
@@ -15,8 +15,77 @@ gambms(
 )
 }
 \arguments{
-\item{Ctrl}{}
+\item{fm}{formula specifying a model to be fitted.}
+
+\item{dat}{data frame;}
+
+\item{knotConfig}{character; one of "EVEN", "VS", or "FREE"}
+
+\item{prior}{character; one of mixtures of g-priors including "Unit", "Hyper-g", "Uniform", "Hyper-g/n", "Beta-prime", "ZS-adapted", "Robust", "Intrinsic", "constant" and "CH"}
+
+\item{family}{character; one of "poisson", "gaussian" and "bernoulli"}
+
+\item{Ctrl}{list; control parameters for MCMC. Ctrl$burnIn is the number of burn-in iterations, Ctrl$mcmcIter is the number of MCMC iterations and Ctrl$printIter determines how often the MCMC iterations would be printed in the console output.}
+}
+\value{
+A list containing objects required to summarize and visualize the function fit.
 }
 \description{
-Title
+This function fits a generalized additive partial linear model (GAPLM) using Bayesian model selection.
+}
+\examples{
+## simualted data
+set.seed(1)
+f_list = list(f1 = function(x) 0.5 * (2*x^5 + 3*x^2 + cos(3*pi*x) - 1),
+              f2 = function(x) 0.75*(0.0035 * (x*3 + 1.5)^3 + (x > -0.5 & x < 0.85) * 
+                                       0.07 *sin(1.7*pi*(x*3 + 1.5)^2 / 3.2)*
+                                       (x*3 -2.5)^2 * exp(x*3 + 1.5)),
+              f3 = function(x) x,
+              f4 = function(x) x*0)
+n = 200
+dat = simmat(f_list, -1, 1, n = n, family = "poisson")
+mf = y~ncs(x1, nk = 20)+ 
+  ncs(x2, nk = 20)  + 
+  ncs(x3, nk = 20) + 
+  ncs(x4, nk = 20)
+
+fit_sim = tryCatch(
+  gambms(mf, dat,
+         knotConfig = "FREE",
+         prior = "Intrinsic",
+         family = "poisson"),
+  error = function(cnd)cnd
+)
+
+summary(fit_sim)
+plot(fit_sim)
+plotnumknot(fit_sim)
+plotresiduals(fit_sim)
+
+## Real data
+data("Pima")
+
+mf = diabetes ~
+  ncs(pregnant, nk = 20) +
+  ncs(glucose, nk = 20) +
+  ncs(pressure, nk = 20) +
+  ncs(triceps, nk = 20) +
+  ncs(mass, nk = 20) +
+  ncs(pedigree, nk = 20) +
+  ncs(age, nk = 20)
+
+fit_Pima =  gambms(mf, Pima,
+                   knotConfig = "VS",
+                   prior = "Intrinsic",
+                   family = "bernoulli",
+                   Ctrl = list(mcmcIter = 2000))
+
+summary(fit_Pima)
+plot(fit_Pima)
+plotnumknot(fit_Pima)
+plotresiduals(fit_Pima)
+
+}
+\seealso{
+\code{\link[=ncs]{ncs()}}, \code{\link[=summary.gambms]{summary.gambms()}}, \code{\link[=plot.gambms]{plot.gambms()}}, \code{\link[=plotnumknot.gambms]{plotnumknot.gambms()}}, \code{\link[=plotresiduals.gambms]{plotresiduals.gambms()}}
 }
