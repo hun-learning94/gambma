@@ -6,15 +6,14 @@ library(gambms)
 ##########################################################################################
 data("Pima")
 
-maxk = 20;
 mf = diabetes ~
-  ncs(pregnant, nk = maxk) +
-  ncs(glucose, nk = maxk) +
-  ncs(pressure, nk = max) +
-  ncs(triceps, nk = maxk) +
-  ncs(mass, nk = maxk) +
-  ncs(pedigree, nk = maxk) +
-  ncs(age, nk = maxk)
+  ncs(pregnant, nk = 20) +
+  ncs(glucose, nk = 20) +
+  ncs(pressure, nk = 20) +
+  ncs(triceps, nk = 20) +
+  ncs(mass, nk = 20) +
+  ncs(pedigree, nk = 20) +
+  ncs(age, nk = 20)
 
 fit_Pima =  gambms(mf, Pima,
                    knotConfig = "VS",

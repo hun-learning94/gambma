@@ -15,11 +15,10 @@ dat = simmat(f_list, -1, 1, n = n, family = "poisson")
 ################################################################################
 ## fit gambms
 ################################################################################
-maxk = 20
-mf = y~ncs(x1, nk=maxk)+ 
-  ncs(x2, nk = maxk)  + 
-  ncs(x3, nk = maxk) + 
-  ncs(x4, nk = maxk)
+mf = y~ncs(x1, nk = 20)+ 
+  ncs(x2, nk = 20)  + 
+  ncs(x3, nk = 20) + 
+  ncs(x4, nk = 20)
 
 fit_sim = tryCatch(
   gambms(mf, dat,
