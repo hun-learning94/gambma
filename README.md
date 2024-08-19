@@ -128,7 +128,6 @@ plotresiduals(fit_Pima)
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-6-2.png" width="100%" />
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ## System environment
 
